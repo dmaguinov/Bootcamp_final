@@ -13,7 +13,7 @@ import nttdata.grupouno.com.operations.util.*;
 public class AccountClientService implements IAccountClientService {
     @Autowired
     private AccountClientRepositorio accountClientRepositorio;
-    @Autowired
+    
     private WebClientApi webClient;
 
     @Override
