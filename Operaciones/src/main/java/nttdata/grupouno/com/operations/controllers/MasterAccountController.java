@@ -190,4 +190,11 @@ public class MasterAccountController {
         Flux<MasterAccountModel> accountFlux = accountServices.findByClient(codeClient);
         return Mono.just(new ResponseEntity<>(accountFlux, accountFlux != null ? HttpStatus.OK : HttpStatus.NOT_FOUND));
     }
+
+    @GetMapping("/between/{dateFrom}/{dateTo}")
+    @ResponseBody
+    public Flux<MasterAccountModel> findAccountsBetween(@PathVariable("dateFrom") final String dateFrom,
+                                                        @PathVariable("dateTo") final String dateTo) {
+        return accountServices.findByStartDateBetween(dateFrom,dateTo);
+    }
 }

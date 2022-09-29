@@ -13,4 +13,6 @@ public interface IMasterAccountServices {
     Flux<MasterAccountModel> findStartDate(String date);
     Mono<MasterAccountModel> findByAccount(String numberAccount);
     Flux<MasterAccountModel> findByClient(String codeClient);
+
+    Flux<MasterAccountModel> findByStartDateBetween(String from, String to);
 }

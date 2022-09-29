@@ -6,11 +6,11 @@ import nttdata.grupouno.com.operations.repositories.implementation.AccountClient
 import nttdata.grupouno.com.operations.repositories.implementation.MasterAccountRepository;
 import nttdata.grupouno.com.operations.repositories.implementation.TypeAccountRepository;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
+import nttdata.grupouno.com.operations.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import java.util.UUID;
 
 @Service
@@ -83,5 +83,17 @@ public class MasterAccountServices implements IMasterAccountServices {
     public Flux<MasterAccountModel> findByClient(String codeClient) {
         return accountClientRepositorio.findByCodeClient(codeClient)
                 .flatMap(accountClientModel -> findByAccount(accountClientModel.getNumberAccount()));
+    }
+
+    @Override
+    public Flux<MasterAccountModel> findByStartDateBetween(String from, String to) {
+        if (from == null || to == null){
+            return Flux.empty();
+        }else{
+            return accountRepository.findAll()
+                    .filter(m -> Util.stringToDate(m.getStartDate()).after(Util.addDay(Util.stringToDate(from),-1)))
+                    .filter(n -> Util.stringToDate(n.getStartDate()).before(Util.addDay(Util.stringToDate(to),1)));
+        }
+
     }
 }

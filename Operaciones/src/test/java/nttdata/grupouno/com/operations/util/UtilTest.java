@@ -58,19 +58,21 @@ class UtilTest {
 
     @Test
     void stringToDate() throws ParseException {
-        String sDate1="2022.08.26";
-        String sDate2="2022.09.26";
+        String sDate1="2022.08.27";
+        String sDate2="2022.09.27";
+        String sDate3="2022.09.27";
         Date convertedDate;
         Date convertedDate2;
+        Date convertedDate3;
         Date today = new Date();
         SimpleDateFormat formatter1=new SimpleDateFormat("yyyy.MM.dd");
         convertedDate =(Date) formatter1.parse(sDate1);
         convertedDate2 =(Date) formatter1.parse(sDate2);
-        today.compareTo(today);
-        System.out.println(convertedDate);
-        System.out.println("<<>>>>>" + convertedDate.compareTo(convertedDate2));
-        Integer a= 10;
-        Integer b= 9;
-        System.out.println(a.compareTo(b));
+        convertedDate3 =(Date) formatter1.parse(sDate3);
+        //today.compareTo(today);
+        //System.out.println(convertedDate);
+        System.out.println("<<>sDate1>>>>" + Util.addDay(convertedDate,-1));
+        System.out.println("<<>sDate3>>>>" + Util.addDay(convertedDate3,1));
+
     }
 }
