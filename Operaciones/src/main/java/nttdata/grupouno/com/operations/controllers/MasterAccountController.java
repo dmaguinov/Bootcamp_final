@@ -3,6 +3,7 @@ package nttdata.grupouno.com.operations.controllers;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.dto.RegisterAccountDto;
 import nttdata.grupouno.com.operations.services.IAccountClientService;
+import nttdata.grupouno.com.operations.services.IDebtClientService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.services.ITypeAccountService;
 
@@ -32,6 +33,8 @@ public class MasterAccountController {
     private ITypeAccountService typeAccountService;
     @Autowired
     private IAccountClientService accountClientService;
+    @Autowired
+    private IDebtClientService debtClientService;
 
     public Mono<ResponseEntity<Map<String, Object>>> fallbackBank(RuntimeException runtimeException){
         Map<String, Object> response = new HashMap<>();
@@ -49,61 +52,69 @@ public class MasterAccountController {
             @Valid @RequestBody Mono<RegisterAccountDto> request) {
         Map<String, Object> response = new HashMap<>();
 
-        return request.flatMap(a -> 
-            typeAccountService.findById(a.getAccountModel().getType().getCode()).flatMap(b -> {
-                response.put("typeAccount", b);
-                if(b.getAmountStart() > a.getAccountModel().getAmount()){
-                    response.put("limit", "El monto mínimo de apertura para este producto es de ".concat(b.getAmountStart().toString()));
-                    return Mono.just(ResponseEntity.badRequest().body(response));
-                }
-                return accountClientService.countByCodeClientAndTypeAccountLike(a.getClientModel().getCodeClient(), b.getCodeRequired()).flatMap(bb -> {
-                    if(bb == 0){
-                        response.put("limit", "Para este producto es requisito tener una(s) cuenta(s) del tipo: ".concat(b.getCodeRequired()));
-                        return Mono.just(ResponseEntity.badRequest().body(response));
-                    }
-                    return accountClientService.countByCodeClientAndTypeAccountAndTypeClient(a.getClientModel().getCodeClient(), b.getCode(), a.getClientModel().getTypeClient()).flatMap(c -> {
-                        if(c.intValue() >= b.getCountPerson() && a.getClientModel().getTypeClient().equals("N")){
-                            response.put("limit", "El máximo de cuentas del tipo <<".concat(b.getDescription()).concat(">> es ").concat(b.getCountPerson().toString()));
-                            return Mono.just(ResponseEntity.badRequest().body(response));
-                        }
-                        if(c.intValue() >= b.getCountBusiness() && a.getClientModel().getTypeClient().equals("J")){
-                            response.put("limit", "El máximo de cuentas del tipo <<".concat(b.getDescription()).concat(">> es ").concat(b.getCountBusiness().toString()));
-                            return Mono.just(ResponseEntity.badRequest().body(response));
-                        }
-                        return accountServices.findByAccount(a.getAccountModel().getNumberAccount()).flatMap(d -> {
-                            response.put("duplicit", d);
-                            return Mono.just(ResponseEntity.badRequest()
-                                    .body(response));
-                        })
-                        .switchIfEmpty(accountServices.createAccount(a.getAccountModel()).flatMap(e -> {
-                            response.put("account", e);
-                            a.getClientModel().setNumberAccount(e.getNumberAccount());
-                            a.getClientModel().setTypeAccount(b.getCode());
-    
-                            return accountClientService.registerClient(a.getClientModel()).flatMap(f -> {
-                                response.put("clients", f);
-                                return Mono.just(ResponseEntity.created(URI.create("/api/account/bank"))
-                                        .body(response));
-                            })
-                            .switchIfEmpty(accountServices.deleteBydId(e.getId()).flatMap(ff -> {
-                                response.put("clientsError", "El cliente no pudo ser verificado para la creación de la cuenta");
-                                return Mono.just(ResponseEntity.badRequest()
-                                    .body(response));
-                            }))
-                            .retry(1)
-                            .onErrorResume(g -> {
-                                response.put("clientsError", a.getClientModel());
-                                response.put("error", g.getMessage());
-    
-                                return accountServices.deleteBydId(e.getId()).flatMap(h -> {
-                                    return Mono.just(ResponseEntity.badRequest()
-                                    .body(response));
-                                });
-                            });
-                        }));
-                    });
-                });
-            }).defaultIfEmpty(ResponseEntity.badRequest().body(response))
+        return request.flatMap(a ->
+                        debtClientService.findPendingDebt(a.getClientModel().getCodeClient()).count()
+                                .flatMap(aLong -> {
+                                    if (aLong.intValue() == 0){
+                                        return typeAccountService.findById(a.getAccountModel().getType().getCode()).flatMap(b -> {
+                                            response.put("typeAccount", b);
+                                            if(b.getAmountStart() > a.getAccountModel().getAmount()){
+                                                response.put("limit", "El monto mínimo de apertura para este producto es de ".concat(b.getAmountStart().toString()));
+                                                return Mono.just(ResponseEntity.badRequest().body(response));
+                                            }
+                                            return accountClientService.countByCodeClientAndTypeAccountLike(a.getClientModel().getCodeClient(), b.getCodeRequired()).flatMap(bb -> {
+                                                if(bb == 0){
+                                                    response.put("limit", "Para este producto es requisito tener una(s) cuenta(s) del tipo: ".concat(b.getCodeRequired()));
+                                                    return Mono.just(ResponseEntity.badRequest().body(response));
+                                                }
+                                                return accountClientService.countByCodeClientAndTypeAccountAndTypeClient(a.getClientModel().getCodeClient(), b.getCode(), a.getClientModel().getTypeClient()).flatMap(c -> {
+                                                    if(c.intValue() >= b.getCountPerson() && a.getClientModel().getTypeClient().equals("N")){
+                                                        response.put("limit", "El máximo de cuentas del tipo <<".concat(b.getDescription()).concat(">> es ").concat(b.getCountPerson().toString()));
+                                                        return Mono.just(ResponseEntity.badRequest().body(response));
+                                                    }
+                                                    if(c.intValue() >= b.getCountBusiness() && a.getClientModel().getTypeClient().equals("J")){
+                                                        response.put("limit", "El máximo de cuentas del tipo <<".concat(b.getDescription()).concat(">> es ").concat(b.getCountBusiness().toString()));
+                                                        return Mono.just(ResponseEntity.badRequest().body(response));
+                                                    }
+                                                    return accountServices.findByAccount(a.getAccountModel().getNumberAccount()).flatMap(d -> {
+                                                                response.put("duplicit", d);
+                                                                return Mono.just(ResponseEntity.badRequest()
+                                                                        .body(response));
+                                                            })
+                                                            .switchIfEmpty(accountServices.createAccount(a.getAccountModel()).flatMap(e -> {
+                                                                response.put("account", e);
+                                                                a.getClientModel().setNumberAccount(e.getNumberAccount());
+                                                                a.getClientModel().setTypeAccount(b.getCode());
+
+                                                                return accountClientService.registerClient(a.getClientModel()).flatMap(f -> {
+                                                                            response.put("clients", f);
+                                                                            return Mono.just(ResponseEntity.created(URI.create("/api/account/bank"))
+                                                                                    .body(response));
+                                                                        })
+                                                                        .switchIfEmpty(accountServices.deleteBydId(e.getId()).flatMap(ff -> {
+                                                                            response.put("clientsError", "El cliente no pudo ser verificado para la creación de la cuenta");
+                                                                            return Mono.just(ResponseEntity.badRequest()
+                                                                                    .body(response));
+                                                                        }))
+                                                                        .retry(1)
+                                                                        .onErrorResume(g -> {
+                                                                            response.put("clientsError", a.getClientModel());
+                                                                            response.put("error", g.getMessage());
+
+                                                                            return accountServices.deleteBydId(e.getId()).flatMap(h -> {
+                                                                                return Mono.just(ResponseEntity.badRequest()
+                                                                                        .body(response));
+                                                                            });
+                                                                        });
+                                                            }));
+                                                });
+                                            });
+                                        }).defaultIfEmpty(ResponseEntity.badRequest().body(response));
+                                    }else{
+                                        response.put("limit", "El cliente tiene una deuda pendiente");
+                                        return Mono.just(ResponseEntity.badRequest().body(response));
+                                    }
+                                })
         )
         .onErrorResume(ex -> Mono.just(ex).cast(WebExchangeBindException.class)
         .flatMap(e -> Mono.just(e.getFieldErrors()))

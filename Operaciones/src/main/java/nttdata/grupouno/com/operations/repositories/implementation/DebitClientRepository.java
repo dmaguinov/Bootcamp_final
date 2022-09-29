@@ -1,0 +1,11 @@
+package nttdata.grupouno.com.operations.repositories.implementation;
+
+import nttdata.grupouno.com.operations.models.DebtClientModel;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+public interface DebitClientRepository extends ReactiveMongoRepository<DebtClientModel, String> {
+
+    Flux<DebtClientModel> findByCodClienteAndState(String codCliente, String state);
+}

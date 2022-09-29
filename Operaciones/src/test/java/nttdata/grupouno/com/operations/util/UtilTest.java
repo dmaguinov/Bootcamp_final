@@ -58,7 +58,7 @@ class UtilTest {
 
     @Test
     void stringToDate() throws ParseException {
-        String sDate1="2022.09.25";
+        String sDate1="2022.08.26";
         String sDate2="2022.09.26";
         Date convertedDate;
         Date convertedDate2;
