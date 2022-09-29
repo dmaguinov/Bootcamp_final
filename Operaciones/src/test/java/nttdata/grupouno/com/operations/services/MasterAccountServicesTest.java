@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
-public class MasterAccountServicesTest {
+class MasterAccountServicesTest {
     @Mock
     private MasterAccountRepository masterAccountRepository;
     @Mock

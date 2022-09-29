@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
-public class TypeAccountServiceTest {
+class TypeAccountServiceTest {
     @Mock
     private TypeAccountRepository typeAccountRepository;
     @InjectMocks

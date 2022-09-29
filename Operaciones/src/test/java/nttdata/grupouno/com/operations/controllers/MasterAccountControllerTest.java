@@ -29,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
-public class MasterAccountControllerTest {
+class MasterAccountControllerTest {
     @InjectMocks
     private MasterAccountController masterAccountController;
     @Mock

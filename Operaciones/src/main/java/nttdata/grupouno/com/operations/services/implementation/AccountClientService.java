@@ -5,16 +5,16 @@ import org.springframework.stereotype.Service;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
 import nttdata.grupouno.com.operations.services.IAccountClientService;
+import nttdata.grupouno.com.operations.services.IWebClientApiService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import nttdata.grupouno.com.operations.util.*;
 
 @Service
 public class AccountClientService implements IAccountClientService {
     @Autowired
     private AccountClientRepositorio accountClientRepositorio;
-    
-    private WebClientApi webClient;
+    @Autowired
+    private IWebClientApiService webClient;
 
     @Override
     public Flux<AccountClientModel> findByCodeClient(String codeClient) {
