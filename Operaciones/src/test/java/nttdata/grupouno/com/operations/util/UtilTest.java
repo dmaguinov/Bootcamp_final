@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,43 +35,23 @@ class UtilTest {
     }
 
     @Test
-    void testDateToString() {
-    }
-
-    @Test
     void getMonth() {
         String resp = Util.getMonth(dateRepresentation);
-        assertEquals(resp, "01");
+        assertEquals("01", resp);
     }
 
     @Test
     void getYear() {
-        String resp = Util.getYear(dateRepresentation);
-        assertEquals(resp, "2022");
-    }
-
-    @Test
-    void comparetest(){
-        Integer a= 10;
-        Integer b= 9;
-        System.out.println(a.compareTo(b));
+        assertEquals("2022", Util.getYear(dateRepresentation));
     }
 
     @Test
     void stringToDate() throws ParseException {
-        String sDate1="2022.08.26";
-        String sDate2="2022.09.26";
-        Date convertedDate;
-        Date convertedDate2;
-        Date today = new Date();
-        SimpleDateFormat formatter1=new SimpleDateFormat("yyyy.MM.dd");
-        convertedDate =(Date) formatter1.parse(sDate1);
-        convertedDate2 =(Date) formatter1.parse(sDate2);
-        today.compareTo(today);
-        System.out.println(convertedDate);
-        System.out.println("<<>>>>>" + convertedDate.compareTo(convertedDate2));
-        Integer a= 10;
-        Integer b= 9;
-        System.out.println(a.compareTo(b));
+        assertEquals(dateRepresentation, Util.stringToDate("2022.01.01"));
+    }
+
+    @Test
+    void generateCartNumber(){
+        assertNotNull(Util.generateCartNumber());
     }
 }

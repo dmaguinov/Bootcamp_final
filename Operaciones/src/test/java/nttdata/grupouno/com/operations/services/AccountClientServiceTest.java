@@ -36,7 +36,7 @@ class AccountClientServiceTest {
 
     @BeforeEach
     void init() {
-        accountClientModel = Mono.just(new AccountClientModel("1", "12", "N", "T", "AHO1"));
+        accountClientModel = Mono.just(new AccountClientModel("1", "12", "N", "T", "AHO1", null));
         accountClienteModels = accountClientModel.flux();
         countClienType = Mono.just(Long.valueOf("1"));
     }
@@ -50,8 +50,8 @@ class AccountClientServiceTest {
 
         assertEquals(accountClientModel, response);
         response.subscribe(x -> {
-            assertEquals(x.getCodeClient(), "1");
-            assertEquals(x.getNumberAccount(), "12");
+            assertEquals("1", x.getCodeClient());
+            assertEquals("12", x.getNumberAccount());
         });
 	}
 
@@ -61,7 +61,7 @@ class AccountClientServiceTest {
         Mono<Long> countResponse = accountClientService.countByCodeClientAndTypeAccount("1", "AHO");
         
         assertEquals(countResponse, countClienType);
-        countResponse.subscribe(x -> assertEquals(x, 1));
+        countResponse.subscribe(x -> assertEquals(1, x));
     }
 
     @Test

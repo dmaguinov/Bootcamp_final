@@ -36,10 +36,8 @@ public class MasterAccountServices implements IMasterAccountServices {
 
     @Override
     public Mono<MasterAccountModel> findById(String id) {
-        System.out.println(">>>>>>>>>>> " + id);
         return accountRepository.findById(id)
                 .flatMap(c -> typeAccountRepository.findById(c.getType().getCode()).flatMap(x -> {
-                    System.out.println(">>>>>>>>>>>>>:: " + c.getNumberAccount());
                     c.setType(x);
                     return Mono.just(c);
                 }));

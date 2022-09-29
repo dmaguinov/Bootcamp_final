@@ -3,6 +3,7 @@ package nttdata.grupouno.com.operations.models;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -15,12 +16,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Document(collection = "accountClient")
 public class AccountClientModel {
+    @Indexed
     @NotEmpty
     private String codeClient;
+    @Indexed
     private String numberAccount;
     @NotEmpty
     private String typeClient; // Persona : N - Empresa: J
     @NotEmpty
     private String status; // T : Titular - F : Firmante
-    private String typeAccount;
+    private String typeAccount; // AHO% - CRE% - VIP%
+    @Indexed
+    private String idCartClient;
 }
