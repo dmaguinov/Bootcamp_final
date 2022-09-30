@@ -26,7 +26,6 @@ public class AccountClientModel {
     private String numberAccount;
     @NotEmpty
     private String typeClient; // Persona : N - Empresa: J
-    @NotEmpty
     private String status; // T : Titular - F : Firmante
     private String typeAccount; // AHO% - CRE% - VIP%
     @Indexed

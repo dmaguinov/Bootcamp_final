@@ -63,7 +63,7 @@ class MasterAccountControllerTest {
         Mockito.when(typeAccountService.findById("AHO1")).thenReturn(Mono.just(typeModel));
         Mockito.when(accountClientService.countByCodeClientAndTypeAccountAndTypeClient("123", "AHO1", "N")).thenReturn(Mono.just(Long.valueOf("1")));
         Mockito.when(accountServices.findByAccount("12")).thenReturn(Mono.just(masteModel));
-        Mockito.when(accountServices.createAccount(masteModel)).thenReturn(Mono.empty());
+        Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.empty());
         Mockito.when(accountServices.findByAccount("123")).thenReturn(Mono.empty());
 
         typeModel.setCode("AHO");
@@ -104,7 +104,7 @@ class MasterAccountControllerTest {
 
         /// Valid create account and register client-account
         masteModel.setNumberAccount("123");
-        Mockito.when(accountServices.createAccount(masteModel)).thenReturn(Mono.just(masteModel));
+        Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.just(masteModel));
         Mockito.when(accountClientService.registerClient(accountModel)).thenReturn(Mono.just(accountModel));
 
         response = masterAccountController.createAccountBank(requestModel);

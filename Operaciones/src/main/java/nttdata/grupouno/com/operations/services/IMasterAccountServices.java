@@ -1,11 +1,12 @@
 package nttdata.grupouno.com.operations.services;
 
+import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface IMasterAccountServices {
-    Mono<MasterAccountModel> createAccount(MasterAccountModel account);
+    Mono<MasterAccountModel> createAccount(MasterAccountModel account, AccountClientModel clientModel);
     Mono<MasterAccountModel> findById(String id);
     Flux<MasterAccountModel> findAllAccount();
     Mono<MasterAccountModel> updateAccount(MasterAccountModel account, String id);

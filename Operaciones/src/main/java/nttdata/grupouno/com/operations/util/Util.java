@@ -1,14 +1,21 @@
 package nttdata.grupouno.com.operations.util;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.lang.RandomStringUtils;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.encrypt.Encryptors;
 
 public final class Util {
 
@@ -59,18 +66,66 @@ public final class Util {
         return "4152".concat(RandomStringUtils.randomNumeric(12));
     }
 
-    public String encriptAES(String pan, String codeClient){
-        Encryptors.standard("password", "salt");
+    /**
+     * Encript AES for Card Number Tarjet
+     * @param pan
+     * @param codeClient
+     * @return
+     */
+    public static String encriptAES(String pan, String idClient){
+        try {
+            IvParameterSpec iv = new IvParameterSpec(idClient.substring(0, 16).getBytes(StandardCharsets.UTF_8));
+            SecretKeySpec secretKeySpec = new SecretKeySpec(idClient.substring(0, 16).getBytes(StandardCharsets.UTF_8), "AES");
 
-        return "";
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, iv);
+
+            byte[] encripted = cipher.doFinal(pan.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(encripted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
     }
 
-    public String desencriptAES(String panEncript, String codeClient) {
-        
-        return "";
+    /**
+     * Desencript AES
+     * @param panEncript
+     * @param idClient
+     * @return
+     */
+    public static String desencriptAES(String panEncript, String idClient) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(idClient.substring(0, 16).getBytes(StandardCharsets.UTF_8));
+            SecretKeySpec secretKeySpec = new SecretKeySpec(idClient.substring(0, 16).getBytes(StandardCharsets.UTF_8), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, iv);
+
+            byte[] encripted = cipher.doFinal(Base64.getDecoder().decode(panEncript));
+            return new String(encripted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
-    public String generateHash(String text) {
-        return BCrypt.hashpw(text, BCrypt.gensalt());
+    /**
+     * Generate Hash
+     * @param text
+     * @return
+     */
+    public static String generateHash(String text) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA3-256");
+            digest.reset();
+            digest.update(text.getBytes(StandardCharsets.UTF_8));
+            return String.format("%064x", new BigInteger(1, digest.digest()));
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

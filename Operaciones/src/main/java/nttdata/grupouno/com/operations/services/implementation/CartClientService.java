@@ -12,7 +12,6 @@ import nttdata.grupouno.com.operations.repositories.implementation.CartClientRep
 import nttdata.grupouno.com.operations.services.ICartClientService;
 import nttdata.grupouno.com.operations.services.IWebClientApiService;
 import nttdata.grupouno.com.operations.util.Util;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -26,27 +25,38 @@ public class CartClientService implements ICartClientService {
 
     @Override
     public Mono<CartClientModel> findById(String id) {
-        return cartClientRepositorio.findById(id);
+        return cartClientRepositorio.findById(id).map(x -> {
+            x.setCartNumber(Util.desencriptAES(x.getCartNumber(), x.getCodeClient()));
+            return x;
+        });
     }
 
     @Override
     public Mono<CartClientModel> findByHashCartNumber(String hashCartNumber) {
-        return cartClientRepositorio.findByHashCartNumber(hashCartNumber);
+        return cartClientRepositorio.findByHashCartNumber(hashCartNumber).map(x -> {
+            x.setCartNumber(Util.desencriptAES(x.getCartNumber(), x.getCodeClient()));
+            return x;
+        });
     }
 
     @Override
-    public Flux<CartClientModel> findByCodeClientAndTypeCartAndCodeStatus(String codeClient, String typeCart,
-            String codeStatus) {
-        return cartClientRepositorio.findByCodeClientAndTypeCartAndCodeStatus(codeClient, typeCart, codeStatus);
+    public Mono<CartClientModel> findByCartNumber(String cardNumber) {
+        return cartClientRepositorio.findByHashCartNumber(Util.generateHash(cardNumber)).map(x -> {
+            x.setCartNumber(cardNumber);
+            return x;
+        });
     }
 
     @Override
     public Mono<CartClientModel> registerCardNumber(CartClientModel cartClientModel) {
         return webClient.findClient(cartClientModel.getCodeClient()).flatMap(
             z -> {
+                if(!z.getId().equals(cartClientModel.getCodeClient())) return Mono.empty();
+
+                String cardNumber = Util.generateCartNumber();
                 cartClientModel.setId(UUID.randomUUID().toString());
-                cartClientModel.setCartNumber(Util.generateCartNumber());
-                cartClientModel.setHashCartNumber("");
+                cartClientModel.setCartNumber(Util.encriptAES(cardNumber, z.getId()));
+                cartClientModel.setHashCartNumber(Util.generateHash(cardNumber));
                 cartClientModel.setCodeStatus("A");
                 cartClientModel.setStartDate(Util.dateToString(new Date()));
 
@@ -55,22 +65,36 @@ public class CartClientService implements ICartClientService {
                 )
                 .flatMap(a -> {
                     a.setCodeStatus("C");
+                    a.setEndDate(Util.dateToString(new Date()));
                     return cartClientRepositorio.save(a).flatMap(y -> cartClientRepositorio.save(cartClientModel));
                 })
                 .switchIfEmpty(cartClientRepositorio.save(cartClientModel))
                 .single()
-                .flatMap(b -> accountClientRepositorio.findByCodeClient(cartClientModel.getCodeClient())
-                        .filter(c -> c.getTypeAccount().contains(b.getTypeCart()))
-                        .flatMap(d -> {
-                            d.setIdCartClient(b.getId());
-                            return accountClientRepositorio.save(d).map(e -> e);
-                        })
-                        .flatMap(e -> Mono.just(b))
-                        .switchIfEmpty(f -> Mono.just(b))
-                        .next()
+                .map(x -> {
+                    x.setCartNumber(Util.desencriptAES(x.getCartNumber(), x.getCodeClient()));
+                    return x;
+                })
+                .flatMap(b -> accountClientRepositorio.countByCodeClientAndTypeAccountLike(cartClientModel.getCodeClient(), b.getTypeCart())
+                    .flatMap(c -> {
+                        if(c.longValue() == 0) return Mono.just(b);
+                        return accountClientRepositorio
+                            .findByCodeClient(cartClientModel.getCodeClient())
+                            .filter(d -> d.getTypeAccount().contains(b.getTypeCart()))
+                            .flatMap(d -> {
+                                d.setIdCartClient(b.getId());
+                                return accountClientRepositorio.save(d);
+                            })
+                            .map(e -> b)
+                            .next();
+                    })
                 );
             }
         ).switchIfEmpty(Mono.empty());
+    }
+
+    @Override
+    public Mono<Long> countByCodeClientAndTypeCartAndCodeStatus(String codeClient, String typeCart, String codeStatus) {
+        return cartClientRepositorio.countByCodeClientAndTypeCartAndCodeStatus(codeClient, typeCart, codeStatus);
     }
 
 }

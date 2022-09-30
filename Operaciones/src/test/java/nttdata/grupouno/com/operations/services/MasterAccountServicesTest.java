@@ -17,6 +17,7 @@ import nttdata.grupouno.com.operations.models.TypeModel;
 import nttdata.grupouno.com.operations.repositories.implementation.MasterAccountRepository;
 import nttdata.grupouno.com.operations.repositories.implementation.TypeAccountRepository;
 import nttdata.grupouno.com.operations.services.implementation.MasterAccountServices;
+import nttdata.grupouno.com.operations.services.implementation.WebClientApiService;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +29,8 @@ class MasterAccountServicesTest {
     private TypeAccountRepository typeAccountRepository;
     @InjectMocks
     private MasterAccountServices masterAccountServices;
+    @Mock
+    private WebClientApiService webClientApiService;
     @Autowired
     private MasterAccountModel modelMaster;
     @Autowired
@@ -49,12 +52,12 @@ class MasterAccountServicesTest {
         Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
         Mockito.when(masterAccountRepository.save(modelMaster)).thenReturn(masterAccountModel);
 
-        Mono<MasterAccountModel> creater = masterAccountServices.createAccount(modelMaster);
+        Mono<MasterAccountModel> creater = masterAccountServices.createAccount(modelMaster, null);
         creater.subscribe(
             x -> {
                 assertEquals(x.getNumberAccount(), modelMaster.getNumberAccount());
-                assertEquals(x.getType().getCode(), "AHO1");
-                assertEquals(x.getType().getDescription(), "Ahorro");
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals("Ahorro", x.getType().getDescription());
             }
         );
     }

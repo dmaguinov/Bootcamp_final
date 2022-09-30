@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono;
 
 public interface CartClientRepositorio extends ReactiveMongoRepository<CartClientModel, String> {
     Mono<CartClientModel> findByHashCartNumber(String hashCartNumber);
-    Flux<CartClientModel> findByCodeClientAndTypeCartAndCodeStatus(String codeClient, String typeCart,
-            String codeStatus);
+    Flux<CartClientModel> findByCodeClientAndTypeCartAndCodeStatus(String codeClient, String typeCart, String codeStatus);
+    Mono<Long> countByCodeClientAndTypeCartAndCodeStatus(String codeClient, String typeCart, String codeStatus);
 }

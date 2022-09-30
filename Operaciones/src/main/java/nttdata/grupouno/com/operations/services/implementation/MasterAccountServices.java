@@ -1,8 +1,10 @@
 package nttdata.grupouno.com.operations.services.implementation;
 
+import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
+import nttdata.grupouno.com.operations.repositories.implementation.CartClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.MasterAccountRepository;
 import nttdata.grupouno.com.operations.repositories.implementation.TypeAccountRepository;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
@@ -21,17 +23,57 @@ public class MasterAccountServices implements IMasterAccountServices {
     private TypeAccountRepository typeAccountRepository;
     @Autowired
     private AccountClientRepositorio accountClientRepositorio;
+    @Autowired 
+    private CartClientRepositorio cartClientRepositorio;
+    @Autowired
+    private WebClientApiService webClientApiService;
 
     @Override
-    public Mono<MasterAccountModel> createAccount(MasterAccountModel account) {
+    public Mono<MasterAccountModel> createAccount(MasterAccountModel account, AccountClientModel clientModel) {
         account.setId(UUID.randomUUID().toString());
         account.setType(new TypeModel(account.getType().getCode(), null, null, null, null, null, null, null, null,null,null));
 
-        return accountRepository.save(account)
-                .flatMap(c -> typeAccountRepository.findById(c.getType().getCode()).flatMap(x -> {
-                    c.setType(x);
-                    return Mono.just(c);
-                }));
+        return webClientApiService.findClient(clientModel.getCodeClient()).
+            flatMap(x -> {
+                if(!x.getId().equals(clientModel.getCodeClient())) return Mono.empty();
+                
+                return accountRepository.save(account)
+                    .flatMap(a -> typeAccountRepository
+                        .findById(a.getType().getCode())
+                        .map(b -> {
+                            a.setType(b);
+                            return a;
+                        })
+                    )
+                    .map(a -> {
+                        clientModel.setId(UUID.randomUUID().toString());
+                        clientModel.setNumberAccount(a.getNumberAccount());
+                        clientModel.setStatus("T");
+                        clientModel.setTypeAccount(a.getType().getCode());
+                        return a;
+                    })
+                    .flatMap(a -> accountClientRepositorio
+                        .save(clientModel)
+                        .flatMap(b -> cartClientRepositorio
+                            .countByCodeClientAndTypeCartAndCodeStatus(b.getCodeClient(), b.getTypeAccount().substring(0, 3), "A")
+                            .flatMap(z -> {
+                                if(z.longValue() != 1) return Mono.just(b);
+                                
+                                return cartClientRepositorio
+                                    .findByCodeClientAndTypeCartAndCodeStatus(b.getCodeClient(), b.getTypeAccount().substring(0, 3), "A")
+                                    .single()
+                                    .flatMap(c -> {
+                                        b.setIdCartClient(c.getId());
+                                        return accountClientRepositorio.save(b);
+                                    })
+                                    .switchIfEmpty(Mono.just(b));
+                            })
+                        ).flatMap(b -> Mono.just(a))
+                        .switchIfEmpty(accountRepository.deleteById(a.getId()).flatMap(c ->  Mono.empty()))
+                        .onErrorResume(b -> accountRepository.deleteById(a.getId()).flatMap(c -> Mono.empty()))
+                    );
+            })
+            .switchIfEmpty(Mono.empty());
     }
 
     @Override

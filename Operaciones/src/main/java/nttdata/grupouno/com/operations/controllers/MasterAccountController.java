@@ -84,32 +84,15 @@ public class MasterAccountController {
                                                     return Mono.just(ResponseEntity.badRequest()
                                                             .body(response));
                                                 })
-                                                .switchIfEmpty(accountServices.createAccount(a.getAccountModel()).flatMap(e -> {
-                                                    response.put("account", e);
-                                                    a.getClientModel().setNumberAccount(e.getNumberAccount());
-                                                    a.getClientModel().setTypeAccount(b.getCode());
-
-                                                    return accountClientService.registerClient(a.getClientModel()).flatMap(f -> {
-                                                                response.put("clients", f);
-                                                                return Mono.just(ResponseEntity.created(URI.create("/api/account/bank"))
+                                                .switchIfEmpty(
+                                                    accountServices.createAccount(a.getAccountModel(), a.getClientModel())
+                                                    .flatMap(e -> {
+                                                        response.put("account", e);
+                                                        return Mono.just(ResponseEntity.created(URI.create("/operation/account/bank"))
                                                                         .body(response));
-                                                            })
-                                                            .switchIfEmpty(accountServices.deleteBydId(e.getId()).flatMap(ff -> {
-                                                                response.put("clientsError", "El cliente no pudo ser verificado para la creación de la cuenta");
-                                                                return Mono.just(ResponseEntity.badRequest()
-                                                                        .body(response));
-                                                            }))
-                                                            .retry(1)
-                                                            .onErrorResume(g -> {
-                                                                response.put("clientsError", a.getClientModel());
-                                                                response.put("error", g.getMessage());
-
-                                                                return accountServices.deleteBydId(e.getId()).flatMap(h -> 
-                                                                    Mono.just(ResponseEntity.badRequest()
-                                                                            .body(response))
-                                                                );
-                                                            });
-                                                }));
+                                                    })
+                                                    .switchIfEmpty(Mono.just(ResponseEntity.badRequest().body(response)))
+                                                );
                                     });
                                 });
                             }).defaultIfEmpty(ResponseEntity.badRequest().body(response));

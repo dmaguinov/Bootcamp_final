@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,5 +48,20 @@ public class CartClientController {
             response.put("error", list);
             return Mono.just(ResponseEntity.badRequest().body(response));
         })); 
+    }
+
+    @GetMapping("/{id}")
+    public Mono<CartClientModel> findById(@PathVariable("id") String id){
+        return cartClientService.findById(id);
+    }
+
+    @GetMapping("/hs/{hash}")
+    public Mono<CartClientModel> findByHashNumber(@PathVariable("hash") String hash){
+        return cartClientService.findByHashCartNumber(hash);
+    }
+
+    @GetMapping("/card/{number}")
+    public Mono<CartClientModel> findByCartNumber(@PathVariable("number") String number){
+        return cartClientService.findByCartNumber(number);
     }
 }
