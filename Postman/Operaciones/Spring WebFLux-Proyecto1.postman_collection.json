@@ -315,6 +315,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Registro nueva tarjeta",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"codeClient\": \"895b3346-5091-4465-b6ed-7b9f3b8411f8\",\r\n  \"typeCart\": \"AHO\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/operation/cartClient/createCard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"operation",
+						"cartClient",
+						"createCard"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
