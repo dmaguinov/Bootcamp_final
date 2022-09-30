@@ -1,4 +1,4 @@
-package nttdata.grupouno.com.Clients;
+package nttdata.grupouno.com.clients;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

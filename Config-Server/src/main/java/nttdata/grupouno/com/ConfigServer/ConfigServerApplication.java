@@ -1,4 +1,4 @@
-package nttdata.grupouno.com.ConfigServer;
+package nttdata.grupouno.com.configserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

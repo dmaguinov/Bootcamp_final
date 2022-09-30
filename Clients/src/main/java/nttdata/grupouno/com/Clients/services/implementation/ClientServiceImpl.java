@@ -1,16 +1,17 @@
-package nttdata.grupouno.com.Clients.services.implementation;
+package nttdata.grupouno.com.clients.services.implementation;
 
-import nttdata.grupouno.com.Clients.convert.ClientsConvert;
-import nttdata.grupouno.com.Clients.models.Clients;
-import nttdata.grupouno.com.Clients.models.LegalPerson;
-import nttdata.grupouno.com.Clients.models.NaturalPerson;
-import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
-import nttdata.grupouno.com.Clients.models.dto.ClientsNatural;
-import nttdata.grupouno.com.Clients.repositories.ClientesRepository;
-import nttdata.grupouno.com.Clients.services.ClientsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import nttdata.grupouno.com.clients.convert.ClientsConvert;
+import nttdata.grupouno.com.clients.models.Clients;
+import nttdata.grupouno.com.clients.models.LegalPerson;
+import nttdata.grupouno.com.clients.models.NaturalPerson;
+import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.clients.models.dto.ClientsNatural;
+import nttdata.grupouno.com.clients.repositories.ClientesRepository;
+import nttdata.grupouno.com.clients.services.ClientsService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

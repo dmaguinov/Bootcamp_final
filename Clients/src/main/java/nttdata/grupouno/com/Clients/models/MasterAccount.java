@@ -1,4 +1,4 @@
-package nttdata.grupouno.com.Clients.models;
+package nttdata.grupouno.com.clients.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

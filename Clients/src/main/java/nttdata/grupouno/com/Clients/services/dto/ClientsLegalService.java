@@ -1,9 +1,9 @@
-package nttdata.grupouno.com.Clients.services.dto;
+package nttdata.grupouno.com.clients.services.dto;
 
-import nttdata.grupouno.com.Clients.models.LegalPerson;
-import nttdata.grupouno.com.Clients.models.MasterAccount;
-import nttdata.grupouno.com.Clients.models.MovementDetail;
-import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.clients.models.LegalPerson;
+import nttdata.grupouno.com.clients.models.MasterAccount;
+import nttdata.grupouno.com.clients.models.MovementDetail;
+import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

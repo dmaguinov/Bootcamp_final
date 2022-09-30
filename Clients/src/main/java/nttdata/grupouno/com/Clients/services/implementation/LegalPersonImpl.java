@@ -1,10 +1,11 @@
-package nttdata.grupouno.com.Clients.services.implementation;
+package nttdata.grupouno.com.clients.services.implementation;
 
-import nttdata.grupouno.com.Clients.models.LegalPerson;
-import nttdata.grupouno.com.Clients.repositories.LegalPersonRepository;
-import nttdata.grupouno.com.Clients.services.LegalPersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import nttdata.grupouno.com.clients.models.LegalPerson;
+import nttdata.grupouno.com.clients.repositories.LegalPersonRepository;
+import nttdata.grupouno.com.clients.services.LegalPersonService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.UUID;

@@ -80,8 +80,12 @@ class MasterAccountControllerTest {
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
             assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
-            assertNotNull(x.getBody().get("limit"));
-            assertEquals(x.getBody().get("typeAccount"), typeModel);
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+
+            assertNotNull(data.get("limit"));
+            assertEquals(data.get("typeAccount"), typeModel);
         });
 
         /// Valid number limit of type person and type account
@@ -89,8 +93,12 @@ class MasterAccountControllerTest {
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
             assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
-            assertNotNull(x.getBody().get("limit"));
-            assertEquals(x.getBody().get("typeAccount"), typeModel);
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+
+            assertNotNull(data.get("limit"));
+            assertEquals(data.get("typeAccount"), typeModel);
         });
 
         /// Valid duplicit account
@@ -98,8 +106,12 @@ class MasterAccountControllerTest {
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
             assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
-            assertEquals(x.getBody().get("duplicit"), masteModel);
-            assertEquals(x.getBody().get("typeAccount"), typeModel);
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+
+            assertEquals(data.get("duplicit"), masteModel);
+            assertEquals(data.get("typeAccount"), typeModel);
         });
 
         /// Valid create account and register client-account
@@ -110,9 +122,13 @@ class MasterAccountControllerTest {
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
             assertEquals(HttpStatus.CREATED, x.getStatusCode());
-            assertEquals(x.getBody().get("account"), masteModel);
-            assertEquals(x.getBody().get("clients"), accountModel);
-            assertEquals(x.getBody().get("typeAccount"), typeModel);
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+
+            assertEquals(data.get("account"), masteModel);
+            assertEquals(data.get("clients"), accountModel);
+            assertEquals(data.get("typeAccount"), typeModel);
         });
     }
 }

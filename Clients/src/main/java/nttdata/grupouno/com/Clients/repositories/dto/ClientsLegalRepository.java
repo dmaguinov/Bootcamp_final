@@ -1,7 +1,8 @@
-package nttdata.grupouno.com.Clients.repositories.dto;
+package nttdata.grupouno.com.clients.repositories.dto;
 
-import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+
+import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
 
 public interface ClientsLegalRepository  extends ReactiveMongoRepository<ClientsLegal,String> {
 }

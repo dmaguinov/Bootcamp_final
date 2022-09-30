@@ -1,11 +1,12 @@
-package nttdata.grupouno.com.Clients.models.dto;
+package nttdata.grupouno.com.clients.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nttdata.grupouno.com.Clients.models.Clients;
-import nttdata.grupouno.com.Clients.models.LegalPerson;
+import nttdata.grupouno.com.clients.models.Clients;
+import nttdata.grupouno.com.clients.models.LegalPerson;
+
 import java.util.List;
 
 @AllArgsConstructor

@@ -1,17 +1,18 @@
-package nttdata.grupouno.com.Clients.controllers;
+package nttdata.grupouno.com.clients.controllers;
 
-import nttdata.grupouno.com.Clients.convert.ClientsConvert;
-import nttdata.grupouno.com.Clients.models.Clients;
-import nttdata.grupouno.com.Clients.models.LegalPerson;
-import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
-import nttdata.grupouno.com.Clients.services.ClientsService;
-import nttdata.grupouno.com.Clients.services.LegalPersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.WebExchangeBindException;
+
+import nttdata.grupouno.com.clients.convert.ClientsConvert;
+import nttdata.grupouno.com.clients.models.Clients;
+import nttdata.grupouno.com.clients.models.LegalPerson;
+import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.clients.services.ClientsService;
+import nttdata.grupouno.com.clients.services.LegalPersonService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

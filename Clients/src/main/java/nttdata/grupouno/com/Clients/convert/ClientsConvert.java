@@ -1,12 +1,13 @@
-package nttdata.grupouno.com.Clients.convert;
+package nttdata.grupouno.com.clients.convert;
 
-import nttdata.grupouno.com.Clients.models.Clients;
-import nttdata.grupouno.com.Clients.models.LegalPerson;
-import nttdata.grupouno.com.Clients.models.NaturalPerson;
-import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
-import nttdata.grupouno.com.Clients.models.dto.ClientsNatural;
-import nttdata.grupouno.com.Clients.models.dto.NaturalClients;
 import org.springframework.stereotype.Component;
+
+import nttdata.grupouno.com.clients.models.Clients;
+import nttdata.grupouno.com.clients.models.LegalPerson;
+import nttdata.grupouno.com.clients.models.NaturalPerson;
+import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.clients.models.dto.ClientsNatural;
+import nttdata.grupouno.com.clients.models.dto.NaturalClients;
 
 import java.util.ArrayList;
 import java.util.List;

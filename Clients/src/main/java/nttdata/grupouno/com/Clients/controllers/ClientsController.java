@@ -1,15 +1,16 @@
-package nttdata.grupouno.com.Clients.controllers;
+package nttdata.grupouno.com.clients.controllers;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import nttdata.grupouno.com.Clients.models.Clients;
-import nttdata.grupouno.com.Clients.models.MasterAccount;
-import nttdata.grupouno.com.Clients.models.MovementDetail;
-import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
-import nttdata.grupouno.com.Clients.models.dto.ClientsNatural;
-import nttdata.grupouno.com.Clients.models.dto.NaturalClients;
-import nttdata.grupouno.com.Clients.services.ClientsService;
-import nttdata.grupouno.com.Clients.services.dto.ClientsLegalService;
-import nttdata.grupouno.com.Clients.services.dto.ClientsNaturalService;
+import nttdata.grupouno.com.clients.models.Clients;
+import nttdata.grupouno.com.clients.models.MasterAccount;
+import nttdata.grupouno.com.clients.models.MovementDetail;
+import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.clients.models.dto.ClientsNatural;
+import nttdata.grupouno.com.clients.models.dto.NaturalClients;
+import nttdata.grupouno.com.clients.services.ClientsService;
+import nttdata.grupouno.com.clients.services.dto.ClientsLegalService;
+import nttdata.grupouno.com.clients.services.dto.ClientsNaturalService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
