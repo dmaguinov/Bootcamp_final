@@ -33,7 +33,6 @@ public class DebtClientService implements IDebtClientService {
         return debitClientRepository.findByCodClienteAndState(codCliente,"P")
                 .filter(debtClientModel -> Util.stringToDate(debtClientModel.getExpirationDate())
                         .compareTo(today) < 1);
-        //return null;
     }
 
     @Override

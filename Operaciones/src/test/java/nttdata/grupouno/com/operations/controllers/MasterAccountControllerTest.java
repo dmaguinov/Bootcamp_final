@@ -53,7 +53,7 @@ class MasterAccountControllerTest {
     void init(){
         typeModel = new TypeModel("AHO1", "Ahorro", "A", 1, 0.0, 1, 1, 10.00, null,null,null);
         masteModel = new MasterAccountModel("1", "12", typeModel, "2022.09.23", "A", null, 5.0, "PEN");
-        accountModel = new AccountClientModel("123", null, "N", "T", null, null);
+        accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null);
     }
 
     @Test
@@ -72,14 +72,14 @@ class MasterAccountControllerTest {
         
         /// Valid Type Account
         response = masterAccountController.createAccountBank(requestModel);
-        response.subscribe(x -> assertEquals(x.getStatusCode(), HttpStatus.BAD_REQUEST));
+        response.subscribe(x -> assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode()));
 
         ///  Valid Limit amount start of a account
         typeModel.setCode("AHO1");
         responseBody.put("typeAccount", typeModel);
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
-            assertEquals(x.getStatusCode(), HttpStatus.BAD_REQUEST);
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
             assertNotNull(x.getBody().get("limit"));
             assertEquals(x.getBody().get("typeAccount"), typeModel);
         });
@@ -88,7 +88,7 @@ class MasterAccountControllerTest {
         masteModel.setAmount(25.50);
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
-            assertEquals(x.getStatusCode(), HttpStatus.BAD_REQUEST);
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
             assertNotNull(x.getBody().get("limit"));
             assertEquals(x.getBody().get("typeAccount"), typeModel);
         });
@@ -97,7 +97,7 @@ class MasterAccountControllerTest {
         typeModel.setCountPerson(3);
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
-            assertEquals(x.getStatusCode(), HttpStatus.BAD_REQUEST);
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
             assertEquals(x.getBody().get("duplicit"), masteModel);
             assertEquals(x.getBody().get("typeAccount"), typeModel);
         });
@@ -109,7 +109,7 @@ class MasterAccountControllerTest {
 
         response = masterAccountController.createAccountBank(requestModel);
         response.subscribe(x -> {
-            assertEquals(x.getStatusCode(), HttpStatus.CREATED);
+            assertEquals(HttpStatus.CREATED, x.getStatusCode());
             assertEquals(x.getBody().get("account"), masteModel);
             assertEquals(x.getBody().get("clients"), accountModel);
             assertEquals(x.getBody().get("typeAccount"), typeModel);

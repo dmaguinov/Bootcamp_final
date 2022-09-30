@@ -59,18 +59,16 @@ public class CartClientService implements ICartClientService {
                 })
                 .switchIfEmpty(cartClientRepositorio.save(cartClientModel))
                 .single()
-                .flatMap(b -> {
-                    return accountClientRepositorio.findByCodeClient(cartClientModel.getCodeClient())
-                        .filter(c -> //c.getStatus().equals("A") && 
-                            c.getTypeAccount().contains(b.getTypeCart()))
+                .flatMap(b -> accountClientRepositorio.findByCodeClient(cartClientModel.getCodeClient())
+                        .filter(c -> c.getTypeAccount().contains(b.getTypeCart()))
                         .flatMap(d -> {
                             d.setIdCartClient(b.getId());
                             return accountClientRepositorio.save(d).map(e -> e);
                         })
                         .flatMap(e -> Mono.just(b))
                         .switchIfEmpty(f -> Mono.just(b))
-                        .next();
-                });
+                        .next()
+                );
             }
         ).switchIfEmpty(Mono.empty());
     }

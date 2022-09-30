@@ -1,7 +1,6 @@
 package nttdata.grupouno.com.operations.controllers;
 
 import nttdata.grupouno.com.operations.models.DebtClientModel;
-import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.services.IDebtClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -87,6 +86,6 @@ public class DebtClientController {
         return debtClientService.findById(id)
                 .flatMap(debtClientModel -> debtClientService.deleteDebtById(id)
                 .then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT))))
-                .defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

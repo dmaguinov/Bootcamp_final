@@ -1,5 +1,7 @@
 package nttdata.grupouno.com.operations.services.implementation;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
@@ -28,6 +30,7 @@ public class AccountClientService implements IAccountClientService {
 
     @Override
     public Mono<AccountClientModel> registerClient(AccountClientModel model) {
+        model.setId(UUID.randomUUID().toString());
         return this.webClient.findClient(model.getCodeClient())
             .flatMap(x -> {
                 if(!x.getId().equals(model.getCodeClient()))

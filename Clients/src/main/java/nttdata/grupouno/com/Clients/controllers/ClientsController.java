@@ -11,6 +11,7 @@ import nttdata.grupouno.com.Clients.services.ClientsService;
 import nttdata.grupouno.com.Clients.services.dto.ClientsLegalService;
 import nttdata.grupouno.com.Clients.services.dto.ClientsNaturalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,6 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -103,23 +103,22 @@ public class ClientsController {
     public Mono<ResponseEntity<Map<String,Object>>> addClient(@Valid @RequestBody final Mono<Clients> clientsMono){
 
         Map<String,Object> respuesta=new HashMap<>();
-        return  clientsMono.flatMap(clients -> {
-            return clientsService.createClient(clients).map(s ->{
+        return  clientsMono.flatMap(clients -> 
+            clientsService.createClient(clients).map(s ->{
                 respuesta.put("client",s);
                 return  ResponseEntity.created(URI.create("/api/clients"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(respuesta);
-            });
-        }).onErrorResume(ex->{
-            return Mono.just(ex).cast(WebExchangeBindException.class)
+            })
+        ).onErrorResume(ex->
+            Mono.just(ex).cast(WebExchangeBindException.class)
                     .flatMap(e -> Mono.just(e.getFieldErrors()))
-                    .flatMapMany(Flux::fromIterable).map(fieldError ->
-                            fieldError.getDefaultMessage()).collectList()
+                    .flatMapMany(Flux::fromIterable).map(DefaultMessageSourceResolvable::getDefaultMessage).collectList()
                     .flatMap(list -> {
                         respuesta.put("errors", list);
                         return Mono.just(ResponseEntity.badRequest().body(respuesta));
-                    });
-        });
+                    })
+        );
     }
 
 
@@ -134,10 +133,10 @@ public class ClientsController {
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteClient(@PathVariable final String id){
-        return clientsService.findAllById(id).flatMap(c ->{
-            return clientsService.deleteClient(c.getId())
-                    .then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
-        }).defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return clientsService.findAllById(id).flatMap(c ->
+            clientsService.deleteClient(c.getId())
+                    .then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)))
+        ).defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 
@@ -164,29 +163,23 @@ public class ClientsController {
         return clientsLegalService.findAccountByRuc(ruc);
     }
 
-    private Flux<MovementDetail> fallBackfindMovementByIdNatural( RuntimeException ex){
+    public Flux<MovementDetail> fallBackfindMovementByIdNatural(RuntimeException ex){
         MovementDetail details= new MovementDetail();
-        details.setCurrency("El microservicio de movimiento no esta disponible. fallBackfindMovementByIdNatural");
+        details.setCurrency("El microservicio de movimiento no esta disponible. fallBackfindMovementByIdNatural".concat(ex.getMessage()));
         return Flux.just(details);
-        //return  new ResponseEntity("El microservicio de movimiento no esta disponible. fallBackfindMovementByIdNatural",HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> fallBackfindMovementByIdLegal(@PathVariable final Long ruc, RuntimeException ex){
+        return new ResponseEntity<>("El microservicio de movimiento no esta disponible. fallBackfindMovementByIdLegal".concat(ex.getMessage()) + ruc,HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> fallBackfindAccountByIdNatural(@PathVariable final Long ruc, RuntimeException ex){
+        return  new ResponseEntity<>("El microservicio de movimiento no esta disponible. fallBackfindAccountByIdNatural".concat(ex.getMessage()) + ruc,HttpStatus.OK);
 
     }
 
-    private ResponseEntity<List<MovementDetail>> fallBackfindMovementByIdLegal(@PathVariable final Long ruc, RuntimeException ex){
-        MovementDetail movementDetail=new MovementDetail();
-        return  new ResponseEntity("El microservicio de movimiento no esta disponible. fallBackfindMovementByIdLegal",HttpStatus.OK);
-
-    }
-
-    private ResponseEntity<List<MovementDetail>> fallBackfindAccountByIdNatural(@PathVariable final Long ruc, RuntimeException ex){
-        MovementDetail movementDetail=new MovementDetail();
-        return  new ResponseEntity("El microservicio de movimiento no esta disponible. fallBackfindAccountByIdNatural",HttpStatus.OK);
-
-    }
-
-    private ResponseEntity<List<MovementDetail>> fallBackfindAccountByIdLegal(@PathVariable final Long ruc, RuntimeException ex){
-        MovementDetail movementDetail=new MovementDetail();
-        return  new ResponseEntity("El microservicio de movimiento no esta disponible. fallBackfindAccountByIdLegal "+ruc,HttpStatus.OK);
+    public ResponseEntity<String> fallBackfindAccountByIdLegal(@PathVariable final Long ruc, RuntimeException ex){
+        return  new ResponseEntity<>("El microservicio de movimiento no esta disponible. fallBackfindAccountByIdLegal ".concat(ex.getMessage()) + ruc,HttpStatus.OK);
 
     }
 }

@@ -3,6 +3,7 @@ package nttdata.grupouno.com.operations.models;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Document(collection = "accountClient")
 public class AccountClientModel {
+    @Id
+    private String id;
     @Indexed
     @NotEmpty
     private String codeClient;

@@ -91,9 +91,6 @@ public class MovementDetailController {
         String rootAccount = body.get("rootAccount");
         String destinationAccount = body.get("destinationAccount");
         Double amount = Double.parseDouble(body.get("amount"));
-        System.out.println(body.get("rootAccount"));
-        System.out.println(body.get("destinationAccount"));
-        System.out.println(body.get("amount"));
         MasterAccountModel rootAccount1 = new MasterAccountModel();
         MasterAccountModel destinationAccount1 = new MasterAccountModel();
 
@@ -101,7 +98,6 @@ public class MovementDetailController {
         Flux<MasterAccountModel> master = this.webClient.get().uri("/operation/account/all").retrieve().bodyToFlux(MasterAccountModel.class);
         Flux<MasterAccountModel> master1 = this.webClient.get().uri("/operation/account/all").retrieve().bodyToFlux(MasterAccountModel.class);
         master.filter(a -> a.getNumberAccount().equals(rootAccount)).subscribe(b -> {
-            System.out.println("Prueba");
             rootAccount1.setNumberAccount(b.getNumberAccount());
             rootAccount1.setId(b.getId());
             rootAccount1.setType(b.getType());
@@ -110,12 +106,9 @@ public class MovementDetailController {
             rootAccount1.setCoinType(b.getCoinType());
             rootAccount1.setEndDate(b.getEndDate());
             rootAccount1.setStartDate(b.getStartDate());
-            System.out.println(rootAccount1);
-
 
                 master1.filter(a -> a.getNumberAccount().equals(destinationAccount))
                         .subscribe(c -> {
-                            System.out.println("Prueba2");
                             destinationAccount1.setNumberAccount(c.getNumberAccount());
                             destinationAccount1.setId(c.getId());
                             destinationAccount1.setType(c.getType());
@@ -124,19 +117,12 @@ public class MovementDetailController {
                             destinationAccount1.setCoinType(c.getCoinType());
                             destinationAccount1.setEndDate(c.getEndDate());
                             destinationAccount1.setStartDate(c.getStartDate());
-                            System.out.println(destinationAccount1.getStatus());
-
-                                respuesta.put("Cuenta Destino", "Cuenta destino existe");
-                                System.out.println("Cuenta Destino");
-                                if(rootAccount1.getAmount() >= amount){
-                                    System.out.println("Saldo Suficiente");
-                                    System.out.println("Origen: "+rootAccount1.getId());
-                                    System.out.println("Destino: "+destinationAccount1.getId());
-                                    movementService.withdrawAmount(rootAccount1.getId(),amount).subscribe(d ->System.out.println("Origen"+d.getAmount()));
-                                    movementService.depositAmount(destinationAccount1.getId(),amount).subscribe(d ->System.out.println("Destino"+d.getAmount()));
-                                }else{
-                                    System.out.println("Saldo insuficiente");
-                                }
+                            
+                            respuesta.put("Cuenta Destino", "Cuenta destino existe");
+                            if(rootAccount1.getAmount() >= amount){
+                                movementService.withdrawAmount(rootAccount1.getId(),amount).subscribe(d ->System.out.println("Origen"+d.getAmount()));
+                                movementService.depositAmount(destinationAccount1.getId(),amount).subscribe(d ->System.out.println("Destino"+d.getAmount()));
+                            }
 
                         });
             Mono.just(ResponseEntity.created(URI.create("/transfer"))
@@ -154,30 +140,22 @@ public class MovementDetailController {
     public ResponseEntity<Flux<MasterAccountModel>> chargeMaintenace(@PathVariable("numberAccount") String numberAccount){
 
         Flux<MasterAccountModel> accountFlux = masterAccountServices.findByAccount(numberAccount).flux().flatMap(account -> {
-            if (account.getType().getCode().equals("AHO2")){
-                return clientService.findByNumBerAccount(account.getNumberAccount()).flatMap(accountClientModel -> {
-                    if (accountClientModel.getTypeClient().equals("J")){
-                        return masterAccountServices.findByClient(accountClientModel.getCodeClient())
-                                .filter(masterAccountModel -> {
-                                    return masterAccountModel.getStatus().equals("A");
-                                }).filter(masterAccountModel -> {
-                                    return masterAccountModel.getType().getProduct().equals("C");
-                                }).filter(masterAccountModel -> {
-                                    return Util.stringToDate(masterAccountModel.getStartDate())
-                                            .compareTo(Util.stringToDate(account.getStartDate())) <= 1;
-                                }).switchIfEmpty(
-                                        movementService.chargeMaintenace(account.getNumberAccount()).flux());
-                    }else{
-                        System.out.println("ES UN TIPO NATURAL");
-                        return movementService.chargeMaintenace(account.getNumberAccount()).flux();
-                    }
-
-                });
-            }else{
-                System.out.println("ES OTRA CUENTA");
+            if (!account.getType().getCode().equals("AHO2")){
                 return Flux.empty();
             }
+            return clientService.findByNumBerAccount(account.getNumberAccount()).flatMap(accountClientModel -> {
+                if (accountClientModel.getTypeClient().equals("J")){
+                    return masterAccountServices.findByClient(accountClientModel.getCodeClient())
+                            .filter(masterAccountModel -> masterAccountModel.getStatus().equals("A")
+                            ).filter(masterAccountModel -> masterAccountModel.getType().getProduct().equals("C")
+                            ).filter(masterAccountModel -> Util.stringToDate(masterAccountModel.getStartDate())
+                                        .compareTo(Util.stringToDate(account.getStartDate())) <= 1
+                            ).switchIfEmpty(movementService.chargeMaintenace(account.getNumberAccount()).flux());
+                }else{
+                    return movementService.chargeMaintenace(account.getNumberAccount()).flux();
+                }
 
+            });
         });
         return new ResponseEntity<>(accountFlux, accountFlux!=null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
