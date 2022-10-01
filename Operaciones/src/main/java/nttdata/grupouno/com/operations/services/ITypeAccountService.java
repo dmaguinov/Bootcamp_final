@@ -6,7 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface ITypeAccountService {
     Mono<TypeModel> registerType(TypeModel typeModel);
-    Flux<TypeModel> registerTypeAll(Iterable<TypeModel> typeModel);
     Flux<TypeModel> findAll();
     Mono<TypeModel> findById(String id);
     Mono<TypeModel> updateType(TypeModel typeModel, String id);

@@ -21,11 +21,6 @@ public class TypeAccountService implements ITypeAccountService {
     }
 
     @Override
-    public Flux<TypeModel> registerTypeAll(Iterable<TypeModel> typeModel) {
-        return typeAccountRepository.saveAll(typeModel);
-    }
-
-    @Override
     public Flux<TypeModel> findAll() {
         return typeAccountRepository.findAll();
     }

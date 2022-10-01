@@ -67,6 +67,17 @@ class TypeAccountServiceTest {
     }
 
     @Test
+    void updateType(){
+        Mockito.when(typeAccountRepository.findById("1")).thenReturn(typeModel);
+        Mockito.when(typeAccountRepository.save(modelType)).thenReturn(typeModel);
+        Mono<TypeModel> response = typeAccountService.updateType(modelType, "1");
+        response.subscribe(x -> {
+            assertEquals(x.getCode(), modelType.getCode());
+            assertEquals(x.getDescription(), modelType.getDescription());
+        });
+    }
+
+    @Test
     void deleteById(){
         Mockito.when(typeAccountRepository.deleteById("1")).thenReturn(Mono.empty());
         Mono<Void> response = typeAccountService.deleteBydId("1");
