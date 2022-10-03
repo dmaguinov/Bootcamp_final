@@ -6,5 +6,5 @@ import reactor.core.publisher.Flux;
 
 public interface DebitClientRepository extends ReactiveMongoRepository<DebtClientModel, String> {
 
-    Flux<DebtClientModel> findByCodClienteAndState(String codCliente, String state);
+    Flux<DebtClientModel> findByNumberAccountAndState(String numberAccount, String state);
 }

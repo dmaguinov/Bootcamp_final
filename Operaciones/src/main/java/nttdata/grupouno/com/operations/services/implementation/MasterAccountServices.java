@@ -1,18 +1,20 @@
 package nttdata.grupouno.com.operations.services.implementation;
 
+import nttdata.grupouno.com.operations.convert.AccountConvert;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
+import nttdata.grupouno.com.operations.models.MovementDetailModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
-import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
-import nttdata.grupouno.com.operations.repositories.implementation.CartClientRepositorio;
-import nttdata.grupouno.com.operations.repositories.implementation.MasterAccountRepository;
-import nttdata.grupouno.com.operations.repositories.implementation.TypeAccountRepository;
+import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
+import nttdata.grupouno.com.operations.repositories.implementation.*;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +29,10 @@ public class MasterAccountServices implements IMasterAccountServices {
     private CartClientRepositorio cartClientRepositorio;
     @Autowired
     private WebClientApiService webClientApiService;
+    @Autowired
+    private MovementDetailRepository movementDetailRepository;
+    @Autowired
+    private AccountConvert accountConvert;
 
     @Override
     public Mono<MasterAccountModel> createAccount(MasterAccountModel account, AccountClientModel clientModel) {
@@ -127,13 +133,23 @@ public class MasterAccountServices implements IMasterAccountServices {
 
     @Override
     public Flux<MasterAccountModel> findByStartDateBetween(String from, String to) {
-        if (from == null || to == null){
-            return Flux.empty();
-        }else{
-            return accountRepository.findAll()
-                    .filter(m -> Util.stringToDate(m.getStartDate()).after(Util.addDay(Util.stringToDate(from),-1)))
-                    .filter(n -> Util.stringToDate(n.getStartDate()).before(Util.addDay(Util.stringToDate(to),1)));
-        }
+        return accountRepository.findAll()
+                .filter(m -> Util.stringToDate(m.getStartDate()).after(Util.addDay(Util.stringToDate(from),-1)))
+                .filter(n -> Util.stringToDate(n.getStartDate()).before(Util.addDay(Util.stringToDate(to),1)));
+    }
 
+    @Override
+    public Flux<AccountDetailDto> findByStartDateBetweenDetail(String from, String to) {
+        return findByStartDateBetween(from, to)
+                .flatMap(masterAccountModel -> {
+                    AccountDetailDto detailDto = accountConvert.accountToDetail(masterAccountModel);
+                    return Flux.just(detailDto)
+                            .flatMap(accountDetailDto -> movementDetailRepository.findByNumberAccount(accountDetailDto.getNumberAccount())
+                                    .collectList().flux().flatMap(movementDetailModels -> {
+                                        List<MovementDetailModel> movementDetails = movementDetailModels;
+                                        accountDetailDto.setMovements(movementDetails);
+                                        return Flux.just(accountDetailDto);
+                                    }));
+                });
     }
 }

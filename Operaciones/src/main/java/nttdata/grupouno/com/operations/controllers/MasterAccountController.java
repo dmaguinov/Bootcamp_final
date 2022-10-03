@@ -1,6 +1,7 @@
 package nttdata.grupouno.com.operations.controllers;
 
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
+import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
 import nttdata.grupouno.com.operations.models.dto.RegisterAccountDto;
 import nttdata.grupouno.com.operations.services.IAccountClientService;
 import nttdata.grupouno.com.operations.services.IDebtClientService;
@@ -176,7 +177,14 @@ public class MasterAccountController {
     @GetMapping("/between/{dateFrom}/{dateTo}")
     @ResponseBody
     public Flux<MasterAccountModel> findAccountsBetween(@PathVariable("dateFrom") final String dateFrom,
-                                                        @PathVariable("dateTo") final String dateTo) {
+                                                      @PathVariable("dateTo") final String dateTo) {
         return accountServices.findByStartDateBetween(dateFrom,dateTo);
+    }
+
+    @GetMapping("/between/detail/{dateFrom}/{dateTo}")
+    @ResponseBody
+    public Flux<AccountDetailDto> findAccountsBetweenDetail(@PathVariable("dateFrom") final String dateFrom,
+                                                        @PathVariable("dateTo") final String dateTo) {
+        return accountServices.findByStartDateBetweenDetail(dateFrom,dateTo);
     }
 }
