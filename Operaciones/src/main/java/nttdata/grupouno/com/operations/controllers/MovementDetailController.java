@@ -63,7 +63,6 @@ public class MovementDetailController {
 
     @GetMapping("/account/{account}")
     public ResponseEntity<Flux<MovementDetailModel>> findMovementByAccount(@PathVariable("account") String account){
-        System.out.println(account);
         Flux<MovementDetailModel> fluxMov = movementService.findByAccount(account);
         return new ResponseEntity<>(fluxMov, HttpStatus.OK);
     }

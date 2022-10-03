@@ -15,11 +15,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class DebtClientModel {
     @Id
     private String id;
-    private String codCliente;
+    private String numberAccount;
     private Double amount;
     private String state;
     private String expirationDate;
     private String issueDate;
     private String paymentDate;
     private String codeCredit;
+
 }

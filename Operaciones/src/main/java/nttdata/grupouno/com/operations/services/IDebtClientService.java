@@ -10,7 +10,7 @@ public interface IDebtClientService {
 
     Mono<DebtClientModel> findById(String id);
 
-    Flux<DebtClientModel> findPendingDebt(String id);
+    Flux<DebtClientModel> findPendingDebt(String codCliente);
 
     Mono<DebtClientModel> createdDebt(DebtClientModel debt);
 

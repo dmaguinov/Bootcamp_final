@@ -1,6 +1,7 @@
 package nttdata.grupouno.com.operations.services.implementation;
 
 import nttdata.grupouno.com.operations.models.DebtClientModel;
+import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.DebitClientRepository;
 import nttdata.grupouno.com.operations.services.IDebtClientService;
 import nttdata.grupouno.com.operations.util.Util;
@@ -16,6 +17,8 @@ public class DebtClientService implements IDebtClientService {
 
     @Autowired
     DebitClientRepository debitClientRepository;
+    @Autowired
+    AccountClientRepositorio clientRepositorio;
 
     @Override
     public Flux<DebtClientModel> findAll() {
@@ -29,10 +32,8 @@ public class DebtClientService implements IDebtClientService {
 
     @Override
     public Flux<DebtClientModel> findPendingDebt(String codCliente) {
-        Date today = new Date();
-        return debitClientRepository.findByCodClienteAndState(codCliente,"P")
-                .filter(debtClientModel -> Util.stringToDate(debtClientModel.getExpirationDate())
-                        .compareTo(today) < 1);
+        return clientRepositorio.findByCodeClient(codCliente)
+                .flatMap(a -> debitClientRepository.findByNumberAccountAndState(a.getNumberAccount(),"P"));
     }
 
     @Override
