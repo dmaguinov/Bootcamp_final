@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import antlr.collections.List;
 import lombok.RequiredArgsConstructor;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.CartClientModel;

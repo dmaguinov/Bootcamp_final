@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +23,7 @@ class UtilTest {
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR,0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         dateRepresentation = cal.getTime();
@@ -50,8 +49,9 @@ class UtilTest {
     }
 
     @Test
-    void stringToDate() throws ParseException {
-        assertEquals(dateRepresentation, Util.stringToDate("2022.01.01"));
+    void stringToDate() {
+        Date respo = Util.stringToDate("2022.01.01");
+        assertEquals("2022", Util.getYear(respo));
     }
 
     @Test

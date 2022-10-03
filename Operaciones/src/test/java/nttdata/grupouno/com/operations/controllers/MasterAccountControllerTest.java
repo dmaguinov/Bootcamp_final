@@ -2,11 +2,13 @@ package nttdata.grupouno.com.operations.controllers;
 
 import lombok.RequiredArgsConstructor;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
+import nttdata.grupouno.com.operations.models.DebtClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
 import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
 import nttdata.grupouno.com.operations.models.dto.RegisterAccountDto;
 import nttdata.grupouno.com.operations.services.IAccountClientService;
+import nttdata.grupouno.com.operations.services.IDebtClientService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.services.ITypeAccountService;
 import reactor.core.publisher.Flux;
@@ -40,24 +42,25 @@ class MasterAccountControllerTest {
     private ITypeAccountService typeAccountService;
     @Mock
     private IAccountClientService accountClientService;
+    @Mock
+    private IDebtClientService debtClientService;
     @Autowired
     private TypeModel typeModel;
     @Autowired
     private RegisterAccountDto modelRegister;
-    @Autowired
-    private Mono<RegisterAccountDto> requestModel;
     @Autowired 
     private MasterAccountModel masteModel;
     @Autowired
     private AccountClientModel accountModel;
     @Autowired
     private AccountDetailDto detailAccount;
-
     @BeforeEach
     void init(){
         typeModel = new TypeModel("AHO1", "Ahorro", "A", 1, 0.0, 1, 1, 10.00, null,null,null);
         masteModel = new MasterAccountModel("1", "12", typeModel, "2022.09.23", "A", null, 5.0, "PEN");
         accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null);
+        modelRegister = new RegisterAccountDto(masteModel, accountModel);
+
         detailAccount = new AccountDetailDto();
         detailAccount.setId("1");
         detailAccount.setNumberAccount("123");
@@ -66,52 +69,97 @@ class MasterAccountControllerTest {
 
     @Test
     void createAccountBank(){
-        Map<String, Object> responseBody = new HashMap<>();
         Mono<ResponseEntity<Map<String, Object>>> response;
-        Mockito.when(typeAccountService.findById("AHO1")).thenReturn(Mono.just(typeModel));
-        Mockito.when(accountClientService.countByCodeClientAndTypeAccountAndTypeClient("123", "AHO1", "N")).thenReturn(Mono.just(Long.valueOf("1")));
-        Mockito.when(accountServices.findByAccount("12")).thenReturn(Mono.just(masteModel));
-        Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.empty());
-        Mockito.when(accountServices.findByAccount("123")).thenReturn(Mono.empty());
 
-        typeModel.setCode("AHO");
-        modelRegister = new RegisterAccountDto(masteModel, accountModel);
-        requestModel = Mono.just(modelRegister);
-        
-        /// Valid Type Account
-        response = masterAccountController.createAccountBank(requestModel);
-        response.subscribe(x -> assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode()));
+        /// Valid deuda pendiente
+        Mockito.when(debtClientService.findPendingDebt("123")).thenReturn(Flux.just(new DebtClientModel()));
 
-        ///  Valid Limit amount start of a account
-        typeModel.setCode("AHO1");
-        responseBody.put("typeAccount", typeModel);
-        response = masterAccountController.createAccountBank(requestModel);
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
         response.subscribe(x -> {
             assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
 
             Map<String, Object> data = x.getBody();
             if(data == null ) data = new HashMap<>();
-
             assertNotNull(data.get("limit"));
-            assertEquals(data.get("typeAccount"), typeModel);
+            assertEquals("El cliente tiene una deuda pendiente", data.get("limit"));
+        });
+
+        /// Valid Type product
+        Mockito.when(debtClientService.findPendingDebt("123")).thenReturn(Flux.empty());
+        Mockito.when(typeAccountService.findById("AHO1")).thenReturn(Mono.empty());
+        
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
+        response.subscribe(x -> {
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
+        });
+
+        /// Valid limit product
+        typeModel.setAmountStart(50.0);
+        Mockito.when(typeAccountService.findById("AHO1")).thenReturn(Mono.just(typeModel));
+
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
+        response.subscribe(x -> {
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+            assertNotNull(data.get("limitAmount"));
+            assertEquals("El monto mínimo de apertura para este producto es de ".concat(typeModel.getAmountStart().toString()), data.get("limitAmount"));
+        });
+
+        ///  Valid required account
+        typeModel.setAmountStart(00.0);
+        typeModel.setCodeRequired("CRE");
+        Mockito.when(typeAccountService.findById("AHO1")).thenReturn(Mono.just(typeModel));
+        Mockito.when(accountClientService.countByCodeClientAndTypeAccountLike("123", "CRE")).thenReturn(Mono.just(Long.valueOf("0")));
+        
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
+        response.subscribe(x -> {
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+            assertNotNull(data.get("limitType"));
+            assertEquals("Para este producto es requisito tener una(s) cuenta(s) del tipo: ".concat(typeModel.getCodeRequired()), data.get("limitType"));
         });
 
         /// Valid number limit of type person and type account
-        masteModel.setAmount(25.50);
-        response = masterAccountController.createAccountBank(requestModel);
+        typeModel.setCodeRequired(null);
+        typeModel.setCountPerson(1);
+        Mockito.when(accountClientService.countByCodeClientAndTypeAccountLike("123", null)).thenReturn(Mono.just(Long.valueOf("1")));
+        Mockito.when(accountClientService.countByCodeClientAndTypeAccountAndTypeClient("123", "AHO1", "N")).thenReturn(Mono.just(Long.valueOf("1")));
+
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
         response.subscribe(x -> {
             assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
 
             Map<String, Object> data = x.getBody();
             if(data == null ) data = new HashMap<>();
+            assertNotNull(data.get("limitMaxN"));
+            assertEquals("El máximo de cuentas del tipo <<".concat(typeModel.getDescription()).concat(">> es ").concat(typeModel.getCountPerson().toString()), data.get("limitMaxN"));
+        });
 
-            assertNotNull(data.get("limit"));
-            assertEquals(data.get("typeAccount"), typeModel);
+        typeModel.setCountBusiness(1);
+        accountModel.setTypeClient("J");
+        Mockito.when(accountClientService.countByCodeClientAndTypeAccountAndTypeClient("123", "AHO1", "J")).thenReturn(Mono.just(Long.valueOf("1")));
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
+        response.subscribe(x -> {
+            assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
+
+            Map<String, Object> data = x.getBody();
+            if(data == null ) data = new HashMap<>();
+            assertNotNull(data.get("limitMaxJ"));
+            assertEquals("El máximo de cuentas del tipo <<".concat(typeModel.getDescription()).concat(">> es ").concat(typeModel.getCountPerson().toString()), data.get("limitMaxJ"));
         });
 
         /// Valid duplicit account
+        accountModel.setTypeClient("N");
         typeModel.setCountPerson(3);
-        response = masterAccountController.createAccountBank(requestModel);
+
+        Mockito.when(accountServices.findByAccount("12")).thenReturn(Mono.just(masteModel));
+        Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.empty());
+
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
         response.subscribe(x -> {
             assertEquals(HttpStatus.BAD_REQUEST, x.getStatusCode());
 
@@ -122,20 +170,18 @@ class MasterAccountControllerTest {
             assertEquals(data.get("typeAccount"), typeModel);
         });
 
-        /// Valid create account and register client-account
-        masteModel.setNumberAccount("123");
-        Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.just(masteModel));
-        Mockito.when(accountClientService.registerClient(accountModel)).thenReturn(Mono.just(accountModel));
 
-        response = masterAccountController.createAccountBank(requestModel);
+        /// Valid create account
+        Mockito.when(accountServices.findByAccount("12")).thenReturn(Mono.empty());
+        Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.just(masteModel));
+
+        response = masterAccountController.createAccountBank(Mono.just(modelRegister));
         response.subscribe(x -> {
             assertEquals(HttpStatus.CREATED, x.getStatusCode());
 
             Map<String, Object> data = x.getBody();
             if(data == null ) data = new HashMap<>();
-
             assertEquals(data.get("account"), masteModel);
-            assertEquals(data.get("clients"), accountModel);
             assertEquals(data.get("typeAccount"), typeModel);
         });
     }
