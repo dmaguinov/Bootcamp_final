@@ -1,6 +1,8 @@
 package nttdata.grupouno.com.operations.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.RequiredArgsConstructor;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
+import nttdata.grupouno.com.operations.models.CartClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
@@ -30,7 +33,7 @@ class MasterAccountServicesTest {
     @InjectMocks
     private MasterAccountServices masterAccountServices;
     @Mock
-    private MasterAccountRepository masterAccountRepository;
+    private MasterAccountRepository accountRepository;
     @Mock
     private TypeAccountRepository typeAccountRepository;
     @Mock
@@ -42,7 +45,11 @@ class MasterAccountServicesTest {
     @Autowired
     private MasterAccountModel modelMaster;
     @Autowired
+    private MasterAccountModel modelMasterService;
+    @Autowired
     private AccountClientModel modelAccount;
+    @Autowired
+    private CartClientModel cartClient;
     @Autowired
     private Mono<MasterAccountModel> masterAccountModel;
     @Autowired
@@ -51,37 +58,189 @@ class MasterAccountServicesTest {
     private Mono<AccountClientModel> modelClient;
     @Autowired
     private Flux<AccountClientModel> modelClients;
-    //@Autowired
-    //private Flux<MasterAccountModel> masterAccountModels;
+    @Autowired
+    private Flux<CartClientModel> cartClientModel;
+    @Autowired
+    private Flux<MasterAccountModel> masterAccountModels;
 
     @BeforeEach
     void init(){
         typeModel = Mono.just(new TypeModel("AHO1", "Ahorro", "A", 10, 0.0, 1, 1, 20.0, null,null,null));
+        modelMasterService = new MasterAccountModel();
+        modelMasterService.setId("123");
         modelMaster = new MasterAccountModel("123", "12", new TypeModel("AHO1", null, null, null, null, null, null, null, null,null,null), "2021.01.02", "A", null, 20.0, "PEN");
-        modelAccount = new AccountClientModel("1", "123", null, "N", null, null, null);
+        modelAccount = new AccountClientModel("1", "123", "12", "N", null, null, null);
+        cartClient = new CartClientModel("1","4152000000000000", "123", "123", "AHO", "A", "2022.10.01", null);
+
         masterAccountModel = Mono.just(modelMaster);
+        masterAccountModels = Flux.just(modelMaster);
         modelClient = Mono.just(modelAccount);
         modelClients = Flux.just(modelAccount);
-
-        Mockito.when(webClientApiService.findClient("123")).thenReturn(masterAccountModel);
-        Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
+        cartClientModel = Flux.just(cartClient);
     }
 
     @Test
     void createAccount(){
+        Mockito.when(webClientApiService.findClient("123")).thenReturn(Mono.empty());
+
+        Mono<MasterAccountModel> response =  masterAccountServices.createAccount(modelMaster, modelAccount);
+        assertNotNull(response);
+
         Mono<Long> cantTarjet = Mono.just(Long.valueOf(1));
-        Mono<Long> cantTarjetEm = Mono.just(Long.valueOf(0));
-
-        Mockito.when(masterAccountRepository.save(modelMaster)).thenReturn(masterAccountModel);
+        
+        Mockito.when(webClientApiService.findClient("123")).thenReturn(Mono.just(modelMasterService));
+        Mockito.when(accountRepository.save(modelMaster)).thenReturn(masterAccountModel);
+        Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
         Mockito.when(accountClientRepositorio.save(modelAccount)).thenReturn(modelClient);
+        Mockito.when(accountRepository.deleteById(anyString())).thenReturn(Mono.empty());
         Mockito.when(cartClientRepositorio.countByCodeClientAndTypeCartAndCodeStatus("123","AHO","A")).thenReturn(cantTarjet);
-        Mockito.when(cartClientRepositorio.countByCodeClientAndTypeCartAndCodeStatus("1234","AHO","A")).thenReturn(cantTarjetEm);
+        Mockito.when(cartClientRepositorio.findByCodeClientAndTypeCartAndCodeStatus("123","AHO","A")).thenReturn(cartClientModel);
 
-        masterAccountServices.createAccount(modelMaster, modelAccount).subscribe(
+        response =  masterAccountServices.createAccount(modelMaster, modelAccount);
+        response.subscribe(
             x -> {
                 assertEquals(x.getNumberAccount(), modelMaster.getNumberAccount());
                 assertEquals("AHO1", x.getType().getCode());
                 assertEquals("Ahorro", x.getType().getDescription());
+                assertEquals("A", x.getStatus());
+                assertEquals("2021.01.02", x.getStartDate());
+                assertEquals("PEN", x.getCoinType());
+                assertEquals(20.00, x.getAmount());
+            }
+        );
+    }
+
+    @Test
+    void findById(){
+        Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
+        Mockito.when(accountRepository.findById("123")).thenReturn(masterAccountModel);
+
+        masterAccountServices.findById("123").subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findAllAccount(){
+        Mockito.when(accountRepository.findAll()).thenReturn(masterAccountModels);
+        Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
+
+        masterAccountServices.findAllAccount().subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void updateAccount(){
+        Mockito.when(accountRepository.save(modelMaster)).thenReturn(masterAccountModel);
+        Mockito.when(accountRepository.findById("123")).thenReturn(masterAccountModel);
+
+        masterAccountServices.updateAccount(modelMaster, "123").subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );   
+    }
+
+    @Test
+    void deleteBydId(){
+        Mockito.when(accountRepository.deleteById("123")).thenReturn(Mono.empty());
+        Mono<Void> respuesta = masterAccountServices.deleteBydId("123");
+        assertNotNull(respuesta);
+    }
+
+    @Test
+    void findStartDate(){
+        Mockito.when(accountRepository.findByStartDate("2021.01.02")).thenReturn(masterAccountModels);
+        masterAccountServices.findStartDate("2021.01.02").subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findByAccount(){
+        Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
+        Mockito.when(accountRepository.findByNumberAccount("12")).thenReturn(masterAccountModel);
+
+        masterAccountServices.findByAccount("12").subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findByClient(){
+        Mockito.when(typeAccountRepository.findById("AHO1")).thenReturn(typeModel);
+        Mockito.when(accountRepository.findByNumberAccount("12")).thenReturn(masterAccountModel);
+        Mockito.when(accountClientRepositorio.findByCodeClient("123")).thenReturn(modelClients);
+
+        masterAccountServices.findByClient("123").subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findByStartDateBetween(){
+        Mockito.when(accountRepository.findAll()).thenReturn(masterAccountModels);
+
+        Flux<MasterAccountModel> response = masterAccountServices.findByStartDateBetween(null , null);
+        assertNotNull(response);
+        assertEquals(Flux.empty(), response);
+
+        masterAccountServices.findByStartDateBetween("2021.01.02", "2021.01.02").subscribe(
+            x -> {
+                assertEquals("AHO1", x.getType().getCode());
+                assertEquals(modelMaster.getId(), x.getId());
+                assertEquals(modelMaster.getNumberAccount(), x.getNumberAccount());
+                assertEquals(modelMaster.getType().getCode(), x.getType().getCode());
+                assertEquals(modelMaster.getStatus(), x.getStatus());
+                assertEquals(modelMaster.getAmount(), x.getAmount());
+                assertEquals(modelMaster.getCoinType(), x.getCoinType());
             }
         );
     }
