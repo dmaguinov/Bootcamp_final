@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
+import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
 import nttdata.grupouno.com.operations.models.dto.RegisterAccountDto;
 import nttdata.grupouno.com.operations.services.IAccountClientService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.services.ITypeAccountService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,12 +50,18 @@ class MasterAccountControllerTest {
     private MasterAccountModel masteModel;
     @Autowired
     private AccountClientModel accountModel;
+    @Autowired
+    private AccountDetailDto detailAccount;
 
     @BeforeEach
     void init(){
         typeModel = new TypeModel("AHO1", "Ahorro", "A", 1, 0.0, 1, 1, 10.00, null,null,null);
         masteModel = new MasterAccountModel("1", "12", typeModel, "2022.09.23", "A", null, 5.0, "PEN");
         accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null);
+        detailAccount = new AccountDetailDto();
+        detailAccount.setId("1");
+        detailAccount.setNumberAccount("123");
+        detailAccount.setStartDate("2022.01.01");
     }
 
     @Test
@@ -130,5 +138,132 @@ class MasterAccountControllerTest {
             assertEquals(data.get("clients"), accountModel);
             assertEquals(data.get("typeAccount"), typeModel);
         });
+    }
+
+    @Test
+    void findAllAccount(){
+        Mockito.when(accountServices.findAllAccount()).thenReturn(Flux.just(masteModel));
+        masterAccountController.findAllAccount().subscribe(
+            x -> {
+                assertEquals(masteModel.getId(), x.getId());
+                assertEquals(masteModel.getNumberAccount(), x.getNumberAccount());
+                assertEquals(masteModel.getStatus(), x.getStatus());
+                assertEquals(masteModel.getAmount(), x.getAmount());
+                assertEquals(masteModel.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findAccountById(){
+        Mockito.when(accountServices.findById("1")).thenReturn(Mono.just(masteModel));
+        masterAccountController.findAccountById("1").subscribe(
+            x -> {
+                assertEquals(HttpStatus.OK, x.getStatusCode());
+                Mono<MasterAccountModel> data = x.getBody();
+                if(data == null) data = Mono.empty();
+                data.subscribe(
+                    y -> {
+                        assertEquals(masteModel.getId(), y.getId());
+                        assertEquals(masteModel.getNumberAccount(), y.getNumberAccount());
+                        assertEquals(masteModel.getStatus(), y.getStatus());
+                        assertEquals(masteModel.getAmount(), y.getAmount());
+                        assertEquals(masteModel.getCoinType(), y.getCoinType());
+                    }
+                );
+            }
+        );
+    }
+
+    @Test
+    void update(){
+        Mockito.when(accountServices.updateAccount(masteModel, "1")).thenReturn(Mono.just(masteModel));
+        masterAccountController.update(masteModel, "1").subscribe(
+            x -> {
+                assertEquals(HttpStatus.CREATED, x.getStatusCode());
+                MasterAccountModel y = x.getBody();
+                if(y == null) y = new MasterAccountModel();
+                assertEquals(masteModel.getId(), y.getId());
+                assertEquals(masteModel.getNumberAccount(), y.getNumberAccount());
+                assertEquals(masteModel.getStatus(), y.getStatus());
+                assertEquals(masteModel.getAmount(), y.getAmount());
+                assertEquals(masteModel.getCoinType(), y.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void delete(){
+        Mockito.when(accountServices.findById("1")).thenReturn(Mono.just(masteModel));
+        Mockito.when(accountServices.deleteBydId("1")).thenReturn(Mono.empty());
+        masterAccountController.delete("1").subscribe(
+            x -> {
+                assertEquals(HttpStatus.NO_CONTENT, x.getStatusCode());
+            }
+        );
+    }
+
+    @Test
+    void findStartDate(){
+        Mockito.when(accountServices.findStartDate("2022.01.01")).thenReturn(Flux.just(masteModel));
+        masterAccountController.findStartDate("2022.01.01").subscribe(
+            x -> {
+                assertEquals(masteModel.getId(), x.getId());
+                assertEquals(masteModel.getNumberAccount(), x.getNumberAccount());
+                assertEquals(masteModel.getStatus(), x.getStatus());
+                assertEquals(masteModel.getAmount(), x.getAmount());
+                assertEquals(masteModel.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findByClient(){
+        Mockito.when(accountServices.findByClient("123")).thenReturn(Flux.just(masteModel));
+        masterAccountController.findByClient("123").subscribe(
+            x -> {
+                assertEquals(HttpStatus.OK, x.getStatusCode());
+
+                Flux<MasterAccountModel> data = x.getBody();
+                if(data == null) data = Flux.empty();
+                data.subscribe(
+                    y -> {
+                        assertEquals(masteModel.getId(), y.getId());
+                        assertEquals(masteModel.getNumberAccount(), y.getNumberAccount());
+                        assertEquals(masteModel.getStatus(), y.getStatus());
+                        assertEquals(masteModel.getAmount(), y.getAmount());
+                        assertEquals(masteModel.getCoinType(), y.getCoinType());
+                    }
+                );
+            }
+        );
+    }
+
+    @Test
+    void findAccountsBetween(){
+        Mockito.when(accountServices.findByStartDateBetween("2022.01.01", "2022.01.02")).thenReturn(Flux.just(masteModel));
+        masterAccountController.findAccountsBetween("2022.01.01","2022.01.02").subscribe(
+            x -> {
+                assertEquals(masteModel.getId(), x.getId());
+                assertEquals(masteModel.getNumberAccount(), x.getNumberAccount());
+                assertEquals(masteModel.getStatus(), x.getStatus());
+                assertEquals(masteModel.getAmount(), x.getAmount());
+                assertEquals(masteModel.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findAccountsBetweenDetail(){
+        Mockito.when(accountServices.findByStartDateBetweenDetail("2022.01.01", "2022.01.02")).thenReturn(Flux.just(detailAccount));
+        masterAccountController.findAccountsBetweenDetail("2022.01.01","2022.01.02").subscribe(
+            x -> {
+                assertEquals(masteModel.getId(), x.getId());
+                assertEquals(masteModel.getNumberAccount(), x.getNumberAccount());
+                assertEquals(masteModel.getStatus(), x.getStatus());
+                assertEquals(masteModel.getAmount(), x.getAmount());
+                assertEquals(masteModel.getCoinType(), x.getCoinType());
+            }
+        );
     }
 }

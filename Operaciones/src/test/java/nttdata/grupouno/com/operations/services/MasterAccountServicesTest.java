@@ -13,15 +13,20 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import antlr.collections.List;
 import lombok.RequiredArgsConstructor;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.CartClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
+import nttdata.grupouno.com.operations.models.MovementDetailModel;
+import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
+import nttdata.grupouno.com.operations.convert.AccountConvert;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.CartClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.MasterAccountRepository;
 import nttdata.grupouno.com.operations.repositories.implementation.TypeAccountRepository;
+import nttdata.grupouno.com.operations.repositories.implementation.MovementDetailRepository;
 import nttdata.grupouno.com.operations.services.implementation.MasterAccountServices;
 import nttdata.grupouno.com.operations.services.implementation.WebClientApiService;
 import reactor.core.publisher.Flux;
@@ -39,9 +44,13 @@ class MasterAccountServicesTest {
     @Mock
     private AccountClientRepositorio accountClientRepositorio;
     @Mock
+    private MovementDetailRepository movementDetailRepository;
+    @Mock
     private WebClientApiService webClientApiService;
     @Mock
     private CartClientRepositorio cartClientRepositorio;
+    @Mock
+    private AccountConvert accountConvert;
     @Autowired
     private MasterAccountModel modelMaster;
     @Autowired
@@ -62,13 +71,15 @@ class MasterAccountServicesTest {
     private Flux<CartClientModel> cartClientModel;
     @Autowired
     private Flux<MasterAccountModel> masterAccountModels;
+    @Autowired
+    private MovementDetailModel modelDetailMovement;
 
     @BeforeEach
     void init(){
         typeModel = Mono.just(new TypeModel("AHO1", "Ahorro", "A", 10, 0.0, 1, 1, 20.0, null,null,null));
         modelMasterService = new MasterAccountModel();
         modelMasterService.setId("123");
-        modelMaster = new MasterAccountModel("123", "12", new TypeModel("AHO1", null, null, null, null, null, null, null, null,null,null), "2021.01.02", "A", null, 20.0, "PEN");
+        modelMaster = new MasterAccountModel("123", "12", new TypeModel("AHO1", null, null, null, null, null, null, null, null,null,null), "2021.01.02", "A", "", 20.0, "PEN");
         modelAccount = new AccountClientModel("1", "123", "12", "N", null, null, null);
         cartClient = new CartClientModel("1","4152000000000000", "123", "123", "AHO", "A", "2022.10.01", null);
 
@@ -77,6 +88,12 @@ class MasterAccountServicesTest {
         modelClient = Mono.just(modelAccount);
         modelClients = Flux.just(modelAccount);
         cartClientModel = Flux.just(cartClient);
+
+        MovementDetailModel movement = new MovementDetailModel();
+        movement.setId(1);
+        movement.setAmount(20.50);
+        movement.setCommission(0.50);
+        modelDetailMovement = movement;
     }
 
     @Test
@@ -228,10 +245,6 @@ class MasterAccountServicesTest {
     void findByStartDateBetween(){
         Mockito.when(accountRepository.findAll()).thenReturn(masterAccountModels);
 
-        Flux<MasterAccountModel> response = masterAccountServices.findByStartDateBetween(null , null);
-        assertNotNull(response);
-        assertEquals(Flux.empty(), response);
-
         masterAccountServices.findByStartDateBetween("2021.01.02", "2021.01.02").subscribe(
             x -> {
                 assertEquals("AHO1", x.getType().getCode());
@@ -241,6 +254,25 @@ class MasterAccountServicesTest {
                 assertEquals(modelMaster.getStatus(), x.getStatus());
                 assertEquals(modelMaster.getAmount(), x.getAmount());
                 assertEquals(modelMaster.getCoinType(), x.getCoinType());
+            }
+        );
+    }
+
+    @Test
+    void findByStartDateBetweenDetail(){
+        AccountDetailDto response = new AccountDetailDto();
+        response.setId("1");
+        response.setNumberAccount("12");
+        response.setAmount(20.0);
+
+        Mockito.when(movementDetailRepository.findByNumberAccount("12")).thenReturn(Flux.just(modelDetailMovement));
+        Mockito.when(accountConvert.accountToDetail(modelMaster)).thenReturn(response);
+        Mockito.when(accountRepository.findAll()).thenReturn(masterAccountModels);
+
+        masterAccountServices.findByStartDateBetweenDetail("2021.01.02", "2021.01.02").subscribe(
+            x -> {
+                assertEquals(response.getId(), x.getId());
+                assertEquals(response.getNumberAccount(), x.getNumberAccount());
             }
         );
     }
