@@ -44,8 +44,7 @@ public class DebtClientService implements IDebtClientService {
     @Override
     public Mono<DebtClientModel> updatedDebt(String id, DebtClientModel debt) {
         return debitClientRepository.findById(id)
-                .flatMap(a -> debitClientRepository.save(debt))
-                .switchIfEmpty(Mono.empty());
+                .flatMap(a -> debitClientRepository.save(debt));
     }
 
     @Override

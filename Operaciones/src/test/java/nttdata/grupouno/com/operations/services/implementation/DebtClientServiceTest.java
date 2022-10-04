@@ -49,14 +49,14 @@ class DebtClientServiceTest {
 
     @BeforeEach
     void init() {
-        model=new DebtClientModel("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98","408535551732729",300.0,"P","2022.10.15","2022.10.01","2022.10.03","CRE1","362a3f8d-f176-489a-b112-a2cf352a36b5");
+        model=new DebtClientModel("D0001","408535551732729",300.0,"P","2022.10.15","2022.10.01","2022.10.03","CRE1","45682535");
         modelMono=Mono.just(model);
         modelFlux=modelMono.flux();
 
-        modelUpdate=new DebtClientModel("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98","408535551732729",550.0,"P","2022.10.15","2022.10.01","2022.10.03","CRE1","362a3f8d-f176-489a-b112-a2cf352a36b5");
-        modelUpdateMono=Mono.just(model);
+        modelUpdate=new DebtClientModel("D0001","408535551732729",550.0,"P","2022.10.15","2022.10.01","2022.10.03","CRE1","45682535");
+        modelUpdateMono=Mono.just(modelUpdate);
 
-        accountClientModel=new AccountClientModel("1","50c6924b-67ec-4e53-97ce-d633ea05f1f7","50c6924b-67ec-4e53-97ce-d633ea05f1f7","N","T","CRE1","123456", Util.dateTimeToString(new Date()),null);
+        accountClientModel=new AccountClientModel("1","13649722","408535551732729","N","T","CRE1","123456", Util.dateTimeToString(new Date()),null,0);
         accountClientModelFlux = Flux.just(accountClientModel);
     }
 
@@ -78,8 +78,8 @@ class DebtClientServiceTest {
 
     @Test
     void findById() {
-        Mockito.when(debitClientRepository.findById("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98")).thenReturn(modelMono);
-        debtClientService.findById("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98")
+        Mockito.when(debitClientRepository.findById("D0001")).thenReturn(modelMono);
+        debtClientService.findById("D0001")
                 .subscribe(a -> {
                     assertEquals(model.getId(), a.getId());
                     assertEquals(model.getNumberAccount(), a.getNumberAccount());
@@ -95,9 +95,9 @@ class DebtClientServiceTest {
 
     @Test
     void findPendingDebt() {
-        Mockito.when(clientRepositorio.findByCodeClient("50c6924b-67ec-4e53-97ce-d633ea05f1f7")).thenReturn(accountClientModelFlux);
+        Mockito.when(clientRepositorio.findByCodeClient("13649722")).thenReturn(accountClientModelFlux);
         Mockito.when(debitClientRepository.findByNumberAccountAndState("408535551732729","P")).thenReturn(modelFlux);
-        debtClientService.findPendingDebt("50c6924b-67ec-4e53-97ce-d633ea05f1f7")
+        debtClientService.findPendingDebt("13649722")
                 .subscribe(a -> {
                     assertEquals(model.getId(), a.getId());
                     assertEquals(model.getNumberAccount(), a.getNumberAccount());
@@ -130,13 +130,12 @@ class DebtClientServiceTest {
 
     @Test
     void updatedDebt() {
+        Mockito.when(debitClientRepository.findById("D0001")).thenReturn(modelMono);
         Mockito.when(debitClientRepository.save(modelUpdate)).thenReturn(modelUpdateMono);
-        Mockito.when(debitClientRepository.findById("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98")).thenReturn(modelMono);
-        debtClientService.updatedDebt("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98",modelUpdate)
+        debtClientService.updatedDebt("D0001",modelUpdate)
                 .subscribe(a -> {
                     assertEquals(modelUpdate.getId(), a.getId());
                     assertEquals(modelUpdate.getNumberAccount(), a.getNumberAccount());
-                    System.out.println("a.getAmount()" + a.getAmount());
                     assertEquals(modelUpdate.getAmount(), a.getAmount());
                     assertEquals(modelUpdate.getState(), a.getState());
                     assertEquals(modelUpdate.getExpirationDate(), a.getExpirationDate());

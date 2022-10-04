@@ -82,7 +82,7 @@ class MasterAccountServicesTest {
         modelMasterService = new MasterAccountModel();
         modelMasterService.setId("123");
         modelMaster = new MasterAccountModel("123", "12", new TypeModel("AHO1", null, null, null, null, null, null, null, null,null,null), "2021.01.02", "A", "", 20.0, "PEN");
-        modelAccount = new AccountClientModel("1", "123", "12", "N", null, null, null, Util.dateTimeToString(new Date()),null);
+        modelAccount = new AccountClientModel("1", "123", "12", "N", null, null, null, Util.dateTimeToString(new Date()),null,0);
         cartClient = new CartClientModel("1","4152000000000000", "123", "123", "AHO", "A", "2022.10.01", null);
 
         masterAccountModel = Mono.just(modelMaster);

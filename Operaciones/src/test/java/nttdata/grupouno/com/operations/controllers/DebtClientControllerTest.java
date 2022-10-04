@@ -54,7 +54,7 @@ class DebtClientControllerTest {
     private Flux<MasterAccountModel> accountModelFlux;
 
     @BeforeEach
-    void setUp() {
+    void init() {
         model=new DebtClientModel("A001","408535551732729",300.0,"P","2022.10.15","2022.10.01","2022.10.03","CRE1","96671457");
         modelCancel=new DebtClientModel("A002","408535551732729",300.0,"C","2022.10.15","2022.10.01","2022.10.03","CRE1","96671457");
         modelMono=Mono.just(model);

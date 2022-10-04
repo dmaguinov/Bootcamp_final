@@ -33,5 +33,6 @@ public class AccountClientModel {
     @NotEmpty
     private String openingDate;
     private String principalAccount; // S: SI - N: NO
+    private Integer pyme;
 }
 

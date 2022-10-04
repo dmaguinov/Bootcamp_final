@@ -39,7 +39,7 @@ class AccountClientServiceTest {
 
     @BeforeEach
     void init() {
-        accountClientModel = Mono.just(new AccountClientModel("1", "1", "12", "N", "T", "AHO1", null, Util.dateTimeToString(new Date()),null));
+        accountClientModel = Mono.just(new AccountClientModel("1", "1", "12", "N", "T", "AHO1", null, Util.dateTimeToString(new Date()),null,0));
         accountClienteModels = accountClientModel.flux();
         countClienType = Mono.just(Long.valueOf("1"));
     }

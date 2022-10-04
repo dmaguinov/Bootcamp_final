@@ -36,12 +36,6 @@ public class MovementDetailController {
     @Autowired
     MasterAccountServices masterAccountServices;
 
-    private final WebClient webClient;
-
-    public MovementDetailController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8001").build();
-    }
-
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     public void createMovement(@RequestBody MovementDetailModel movement){
@@ -93,6 +87,7 @@ public class MovementDetailController {
 
     @PutMapping("/transfer")
     public Mono<ResponseEntity<Map<String, Object>>> transfer(@RequestBody Map<String, String> body) {
+        String uriTransfer= "/transfer";
         String rootAccount = body.get("rootAccount");
         String destinationAccount = body.get("destinationAccount");
         Double amount = Double.parseDouble(body.get("amount"));
@@ -125,44 +120,49 @@ public class MovementDetailController {
                             
                             respuesta.put("Cuenta Destino", "Cuenta destino existe");
                             if(rootAccount1.getAmount() >= amount){
-                                movementService.withdrawAmount(rootAccount1.getId(),amount).subscribe(d ->System.out.println("Origen"+d.getAmount()));
-                                movementService.depositAmount(destinationAccount1.getId(),amount).subscribe(d ->System.out.println("Destino"+d.getAmount()));
+                                movementService.withdrawAmount(rootAccount1.getId(),amount);
+                                movementService.depositAmount(destinationAccount1.getId(),amount);
                             }
 
                         });
-            Mono.just(ResponseEntity.created(URI.create("/transfer"))
+            Mono.just(ResponseEntity.created(URI.create(uriTransfer))
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(respuesta));
         });
 
-        return Mono.just(ResponseEntity.created(URI.create("/transfer"))
+        return Mono.just(ResponseEntity.created(URI.create(uriTransfer))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(respuesta));
 
     }
 
     @GetMapping("/maintenace/{numberAccount}")
-    public ResponseEntity<Flux<MasterAccountModel>> chargeMaintenace(@PathVariable("numberAccount") String numberAccount){
-
-        Flux<MasterAccountModel> accountFlux = masterAccountServices.findByAccount(numberAccount).flux().flatMap(account -> {
-            if (!account.getType().getCode().equals("AHO2")){
-                return Flux.empty();
+    public Mono<ResponseEntity<Map<String, Object>>> chargeMaintenace(@PathVariable("numberAccount") String numberAccount){
+        Map<String, Object> response = new HashMap<>();
+          return masterAccountServices.findByAccount(numberAccount).flatMap(a -> {
+            if (!a.getType().getCode().equals("AHO2")){
+                response.put("msg","El tipo de Cuenta no es Corriente");
+                return Mono.just(ResponseEntity.badRequest().body(response));
             }
-            return clientService.findByNumBerAccount(account.getNumberAccount()).flatMap(accountClientModel -> {
-                if (accountClientModel.getTypeClient().equals("J")){
-                    return masterAccountServices.findByClient(accountClientModel.getCodeClient())
-                            .filter(masterAccountModel -> masterAccountModel.getStatus().equals("A")
-                            ).filter(masterAccountModel -> masterAccountModel.getType().getProduct().equals("C")
-                            ).filter(masterAccountModel -> Util.stringToDate(masterAccountModel.getStartDate())
-                                        .compareTo(Util.stringToDate(account.getStartDate())) <= 1
-                            ).switchIfEmpty(movementService.chargeMaintenace(account.getNumberAccount()).flux());
-                }else{
-                    return movementService.chargeMaintenace(account.getNumberAccount()).flux();
-                }
-
-            });
+            return clientService.findByNumBerAccount(a.getNumberAccount())
+                    .filter(accountClientModel -> accountClientModel.getStatus().equals("T"))
+                    .take(1).next()
+                    .flatMap(b -> {
+                        if (b.getTypeClient().equals("J") && b.getPyme().equals(1)){
+                            response.put("msg","El tipo de Cliente no aplica mantenimiento");
+                            return Mono.just(ResponseEntity.badRequest().body(response));
+                        }else{
+                            return movementService.chargeMaintenace(a.getNumberAccount())
+                                    .flatMap(d -> {
+                                        response.put("msg","Se cargo el mantenimiento");
+                                        response.put("account",d);
+                                        return Mono.just(ResponseEntity.created(URI.create("/transfer"))
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .body(response));
+                                    });
+                        }
+                    });
         });
-        return new ResponseEntity<>(accountFlux, accountFlux!=null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
 
@@ -178,7 +178,7 @@ public class MovementDetailController {
 
         Map<String, Object> respuesta = new HashMap<>();
 
-        Flux<AccountClientModel> accountCard = this.webClient.get().uri("/operation/accountClient/findByidCartClient/{idcartclient}",idCartClient).retrieve().bodyToFlux(AccountClientModel.class);
+        Flux<AccountClientModel> accountCard = clientService.findByidCartClient(idCartClient);
         accountCard.filter(a -> a.getPrincipalAccount().equals("S")).subscribe(b -> {
             // validamos si superó la cantidad de transacciones para considerar la comisión
             MovementDetailModel movement = new MovementDetailModel();

@@ -60,7 +60,7 @@ class MasterAccountControllerTest {
     void init(){
         typeModel = new TypeModel("AHO1", "Ahorro", "A", 1, 0.0, 1, 1, 10.00, null,null,null);
         masteModel = new MasterAccountModel("1", "12", typeModel, "2022.09.23", "A", null, 5.0, "PEN");
-        accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null, Util.dateTimeToString(new Date()),null);
+        accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null, Util.dateTimeToString(new Date()),null,0);
         modelRegister = new RegisterAccountDto(masteModel, accountModel);
 
         detailAccount = new AccountDetailDto();
