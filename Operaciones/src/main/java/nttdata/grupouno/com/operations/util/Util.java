@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,8 +15,6 @@ import java.util.Date;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.lang.RandomStringUtils;
 
 public final class Util {
 
@@ -36,9 +35,8 @@ public final class Util {
         try {
             return formatter.parse(dateString);
         } catch (ParseException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static Date addDay(Date date, int amount){
@@ -63,7 +61,8 @@ public final class Util {
      * @return
      */
     public static String generateCartNumber() {
-        return "4152".concat(RandomStringUtils.randomNumeric(12));
+        SecureRandom random = new SecureRandom();
+        return "4152000".concat(String.valueOf(random.nextInt(999999999)));
     }
 
     /**
@@ -83,7 +82,6 @@ public final class Util {
             byte[] encripted = cipher.doFinal(pan.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(encripted);
         } catch (Exception ex) {
-            ex.printStackTrace();
             return "";
         }
     }
@@ -105,7 +103,6 @@ public final class Util {
             byte[] encripted = cipher.doFinal(Base64.getDecoder().decode(panEncript));
             return new String(encripted);
         } catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -124,7 +121,6 @@ public final class Util {
             return String.format("%064x", new BigInteger(1, digest.digest()));
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -142,8 +138,7 @@ public final class Util {
         try {
             return formatter.parse(dateString);
         } catch (ParseException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }

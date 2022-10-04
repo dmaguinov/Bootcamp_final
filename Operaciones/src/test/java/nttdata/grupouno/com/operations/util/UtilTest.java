@@ -56,7 +56,8 @@ class UtilTest {
 
     @Test
     void generateCartNumber(){
-        assertNotNull(Util.generateCartNumber());
+        String data = Util.generateCartNumber();
+        assertNotNull(data);
     }
 
     @Test
