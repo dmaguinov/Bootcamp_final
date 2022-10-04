@@ -76,4 +76,19 @@ class UtilTest {
         String hash = Util.generateHash("4214000000000001");
         assertEquals("ef655c9091b68efc0c0da60e2a92a599a945c13eb78aa1b50a4d255401a9fd2c", hash);
     }
+
+    @Test
+    void dateTimeToString(){
+        String date = Util.dateTimeToString(dateRepresentation);
+        assertEquals("2022.01.01 12.00.00", date);
+    }
+
+    @Test
+    void stringToDateTime(){
+        Date date = Util.stringToDateTime("2022.01.01 12.00.00");
+        assertEquals(dateRepresentation, date);
+
+        Date date2 = Util.stringToDateTime(null);
+        assertEquals(null, date2);
+    }
 }
