@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -34,6 +35,12 @@ public class MovementDetailController {
     AccountClientService clientService;
     @Autowired
     MasterAccountServices masterAccountServices;
+
+    private final WebClient webClient;
+
+    public MovementDetailController(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8001").build();
+    }
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
