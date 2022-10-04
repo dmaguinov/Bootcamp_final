@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DebtClientServiceTest {
 
     @Mock
-    DebitClientRepository debitClientRepository;
+    private DebitClientRepository debitClientRepository;
     @Mock
     private AccountClientRepositorio clientRepositorio;
     @InjectMocks
