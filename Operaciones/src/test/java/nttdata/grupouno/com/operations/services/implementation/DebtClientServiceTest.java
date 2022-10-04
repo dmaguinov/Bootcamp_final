@@ -5,6 +5,7 @@ import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.DebtClientModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.DebitClientRepository;
+import nttdata.grupouno.com.operations.util.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,7 +56,7 @@ class DebtClientServiceTest {
         modelUpdate=new DebtClientModel("8f849bfe-7ff8-4c0b-a1f9-a1c4bd3dfb98","408535551732729",550.0,"P","2022.10.15","2022.10.01","2022.10.03","CRE1","362a3f8d-f176-489a-b112-a2cf352a36b5");
         modelUpdateMono=Mono.just(model);
 
-        accountClientModel=new AccountClientModel("1","50c6924b-67ec-4e53-97ce-d633ea05f1f7","50c6924b-67ec-4e53-97ce-d633ea05f1f7","N","T","CRE1","123456");
+        accountClientModel=new AccountClientModel("1","50c6924b-67ec-4e53-97ce-d633ea05f1f7","50c6924b-67ec-4e53-97ce-d633ea05f1f7","N","T","CRE1","123456", Util.dateTimeToString(new Date()),null);
         accountClientModelFlux = Flux.just(accountClientModel);
     }
 

@@ -2,6 +2,10 @@ package nttdata.grupouno.com.operations.services.implementation;
 
 import java.util.UUID;
 
+import nttdata.grupouno.com.operations.models.dto.AccountClientDto;
+import nttdata.grupouno.com.operations.repositories.implementation.CartClientRepositorio;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
@@ -13,10 +17,14 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class AccountClientService implements IAccountClientService {
+    private static final Logger logger = LogManager.getLogger(AccountClientService.class);
+
     @Autowired
     private AccountClientRepositorio accountClientRepositorio;
     @Autowired
     private IWebClientApiService webClient;
+    @Autowired
+    private CartClientRepositorio cartClientRepositorio;
 
     @Override
     public Flux<AccountClientModel> findByCodeClient(String codeClient) {
@@ -69,5 +77,49 @@ public class AccountClientService implements IAccountClientService {
         if(typeAccount == null || typeAccount.isBlank())
             return Mono.just(Long.valueOf("1"));
         return accountClientRepositorio.countByCodeClientAndTypeAccountLike(codeClient, typeAccount);
+    }
+
+    @Override
+    public Mono<AccountClientModel> assignPrincipalAccount(AccountClientDto model) {
+        return cartClientRepositorio.findById(model.getIdCartClient()).flatMap(a -> {
+            //Las tarjetas de debito se pueden a sociar a diferentes cuentas y una de ellas ser principal
+            if("AHO".equals(a.getTypeCart())) {
+                return accountClientRepositorio.findByIdCartClientAndNumberAccount(model.getIdCartClient(), model.getNumberAccount()).flatMap(b -> {
+                            b.setPrincipalAccount("S");
+                            return accountClientRepositorio.findByIdCartClient(model.getIdCartClient() )
+                                    .flatMap(c -> {
+                                        c.setPrincipalAccount("N");
+                                        return accountClientRepositorio.save(c).flatMap(d -> accountClientRepositorio.save(b));
+                                    })
+                                    .switchIfEmpty(accountClientRepositorio.save(b))
+                                    .single()
+                                    .flatMap(e -> Mono.just(b));
+                        }) .switchIfEmpty(
+                                accountClientRepositorio.findByCodeClientAndNumberAccount(model.getCodeClient(), model.getNumberAccount())
+                        )
+                        .single()
+                        .flatMap(f -> {
+                            f.setIdCartClient(model.getIdCartClient());
+                            f.setPrincipalAccount("S");
+
+                            return accountClientRepositorio.findByIdCartClient(model.getIdCartClient() )
+                                    .flatMap(g -> {
+                                        g.setPrincipalAccount("N");
+                                        return accountClientRepositorio.save(g).flatMap(h -> accountClientRepositorio.save(f));
+                                    }).single()
+                                    .switchIfEmpty(Mono.empty());
+                        });
+            }
+            else{
+                logger.debug("No es una tarjeta de debito");
+                return Mono.empty();
+            }
+        }).switchIfEmpty(Mono.empty());
+
+    }
+
+    @Override
+    public Flux<AccountClientModel> findByidCartClient(String idCartClient) {
+        return accountClientRepositorio.findByidCartClient(idCartClient);
     }
 }

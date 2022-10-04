@@ -2,6 +2,7 @@ package nttdata.grupouno.com.operations.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import nttdata.grupouno.com.operations.util.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import nttdata.grupouno.com.operations.repositories.implementation.AccountClient
 import nttdata.grupouno.com.operations.services.implementation.AccountClientService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Date;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ class AccountClientServiceTest {
 
     @BeforeEach
     void init() {
-        accountClientModel = Mono.just(new AccountClientModel("1", "1", "12", "N", "T", "AHO1", null));
+        accountClientModel = Mono.just(new AccountClientModel("1", "1", "12", "N", "T", "AHO1", null, Util.dateTimeToString(new Date()),null));
         accountClienteModels = accountClientModel.flux();
         countClienType = Mono.just(Long.valueOf("1"));
     }

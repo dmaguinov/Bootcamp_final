@@ -11,12 +11,14 @@ import nttdata.grupouno.com.operations.services.IAccountClientService;
 import nttdata.grupouno.com.operations.services.IDebtClientService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.services.ITypeAccountService;
+import nttdata.grupouno.com.operations.util.Util;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +60,7 @@ class MasterAccountControllerTest {
     void init(){
         typeModel = new TypeModel("AHO1", "Ahorro", "A", 1, 0.0, 1, 1, 10.00, null,null,null);
         masteModel = new MasterAccountModel("1", "12", typeModel, "2022.09.23", "A", null, 5.0, "PEN");
-        accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null);
+        accountModel = new AccountClientModel("11", "123", null, "N", "T", null, null, Util.dateTimeToString(new Date()),null);
         modelRegister = new RegisterAccountDto(masteModel, accountModel);
 
         detailAccount = new AccountDetailDto();

@@ -1,11 +1,14 @@
 package nttdata.grupouno.com.operations.controllers;
 
+import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.MovementDetailModel;
 import nttdata.grupouno.com.operations.services.implementation.AccountClientService;
 import nttdata.grupouno.com.operations.services.implementation.MasterAccountServices;
 import nttdata.grupouno.com.operations.services.implementation.MovementDetailService;
 import nttdata.grupouno.com.operations.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,12 +19,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/operation/movement")
 public class MovementDetailController {
+
+    private static final Logger logger = LogManager.getLogger(MovementDetailController.class);
 
     @Autowired
     MovementDetailService movementService;
@@ -157,5 +163,80 @@ public class MovementDetailController {
             });
         });
         return new ResponseEntity<>(accountFlux, accountFlux!=null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
+
+    @PutMapping("/movementCardDebit")
+    public Mono<ResponseEntity<Map<String, Object>>> movementCardDebit(@RequestBody Map<String, String> body) {
+        String idCartClient = body.get("idCartClient");
+        Double amount = Double.parseDouble(body.get("amount"));
+        String movementType = body.get("movementType");
+
+        logger.debug("idCartClient " + idCartClient);
+        logger.debug("amount operation " + amount);
+        logger.debug("movementType " + movementType);
+
+        Map<String, Object> respuesta = new HashMap<>();
+
+        Flux<AccountClientModel> accountCard = this.webClient.get().uri("/operation/accountClient/findByidCartClient/{idcartclient}",idCartClient).retrieve().bodyToFlux(AccountClientModel.class);
+        accountCard.filter(a -> a.getPrincipalAccount().equals("S")).subscribe(b -> {
+            // validamos si superó la cantidad de transacciones para considerar la comisión
+            MovementDetailModel movement = new MovementDetailModel();
+            masterAccountServices.validAccountBalance(b.getNumberAccount(),amount, movementType.charAt(0)).subscribe(m -> {
+                Date today = new Date();
+                if(m.getBlSaldo()){
+                    // se realiza la transacción
+                    movementService.countValue().map(r -> {
+                        movement.setId(r+1);
+                        movement.setAmount(amount);
+                        movement.setNumberAccount(m.getAccountModel().getNumberAccount());
+                        movement.setDate(Util.dateTimeToString(today));
+                        movement.setMovementType(movementType.charAt(0));
+                        movement.setCurrency(m.getAccountModel().getCoinType());
+                        movement.setMonth(Util.getMonth(today));
+                        movement.setYear(Util.getYear(today));
+                        createMovement(movement);
+                        masterAccountServices.updateAccount(m.getAccountModel(), m.getAccountModel().getId()).subscribe();
+                        return r;
+                    }).subscribe();
+                    logger.debug("exito");
+                    respuesta.put("mensaje","Se realiza el movimiento con la cuenta " + b.getNumberAccount());
+                }
+                else{
+                    logger.debug("la cuenta " + b.getNumberAccount() + " no tiene saldo suficiente");
+                    accountCard.sort( (obj1, obj2) -> Util.stringToDateTime(obj1.getOpeningDate()).compareTo(Util.stringToDateTime(obj2.getOpeningDate()))).subscribe(c -> {
+                        masterAccountServices.validAccountBalance(c.getNumberAccount(),amount,movementType.charAt(0)).subscribe(m2 -> {
+                            if(m2.getBlSaldo()){
+                                // se realiza la transacción
+                                movementService.countValue().map(r -> {
+                                    movement.setId(r+1);
+                                    movement.setAmount(amount);
+                                    movement.setNumberAccount(m2.getAccountModel().getNumberAccount());
+                                    movement.setDate(Util.dateToString(today));
+                                    movement.setMovementType(movementType.charAt(0));
+                                    movement.setCurrency(m2.getAccountModel().getCoinType());
+                                    movement.setMonth(Util.getMonth(today));
+                                    movement.setYear(Util.getYear(today));
+                                    createMovement(movement);
+                                    masterAccountServices.updateAccount(m2.getAccountModel(), m2.getAccountModel().getId()).subscribe();
+                                    return r;
+                                }).subscribe();
+                                logger.debug("exito");
+                                respuesta.put("mensaje","Se realiza el movimiento con la cuenta " + c.getNumberAccount());
+                            }
+                            else{
+                                logger.debug("la cuenta " + m2.getAccountModel().getNumberAccount() + " no tiene saldo suficiente");
+                            }
+                        });
+
+                    });
+                }
+            });
+        });
+
+        return Mono.just(ResponseEntity.created(URI.create("/movementCardDebit"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(respuesta));
+
     }
 }

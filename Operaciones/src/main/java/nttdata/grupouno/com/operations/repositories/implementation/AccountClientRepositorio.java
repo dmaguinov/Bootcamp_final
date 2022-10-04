@@ -13,4 +13,11 @@ public interface AccountClientRepositorio extends ReactiveMongoRepository<Accoun
     Mono<Long> countByCodeClientAndTypeAccount(String codeClient, String typeAccount);
     Mono<Long> countByCodeClientAndTypeAccountAndTypeClient(String codeClient, String typeAccount, String typeClient);
     Mono<Long> countByCodeClientAndTypeAccountLike(String codeClient, String typeAccount);
+
+    Mono<AccountClientModel> findByIdCartClientAndNumberAccount(String idCartClient, String numberAccount);
+
+    Flux<AccountClientModel> findByIdCartClient(String idCartClient);
+
+    Mono<AccountClientModel> findByCodeClientAndNumberAccount(String codeClient, String numberAccount);
+    Flux<AccountClientModel> findByidCartClient(String idCartClient);
 }

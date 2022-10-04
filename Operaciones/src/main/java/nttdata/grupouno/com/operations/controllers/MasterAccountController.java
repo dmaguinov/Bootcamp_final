@@ -187,4 +187,10 @@ public class MasterAccountController {
                                                         @PathVariable("dateTo") final String dateTo) {
         return accountServices.findByStartDateBetweenDetail(dateFrom,dateTo);
     }
+
+    @GetMapping("/findByAccount/{numberaccount}")
+    public Mono<MasterAccountModel> findByAccount(@PathVariable("numberaccount") final String numberaccount) {
+        return accountServices.findByAccount(numberaccount);
+    }
+
 }

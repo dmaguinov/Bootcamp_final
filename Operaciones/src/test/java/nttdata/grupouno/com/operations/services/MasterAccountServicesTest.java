@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import nttdata.grupouno.com.operations.util.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ import nttdata.grupouno.com.operations.services.implementation.MasterAccountServ
 import nttdata.grupouno.com.operations.services.implementation.WebClientApiService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Date;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
@@ -79,7 +82,7 @@ class MasterAccountServicesTest {
         modelMasterService = new MasterAccountModel();
         modelMasterService.setId("123");
         modelMaster = new MasterAccountModel("123", "12", new TypeModel("AHO1", null, null, null, null, null, null, null, null,null,null), "2021.01.02", "A", "", 20.0, "PEN");
-        modelAccount = new AccountClientModel("1", "123", "12", "N", null, null, null);
+        modelAccount = new AccountClientModel("1", "123", "12", "N", null, null, null, Util.dateTimeToString(new Date()),null);
         cartClient = new CartClientModel("1","4152000000000000", "123", "123", "AHO", "A", "2022.10.01", null);
 
         masterAccountModel = Mono.just(modelMaster);

@@ -6,19 +6,26 @@ import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.MovementDetailModel;
 import nttdata.grupouno.com.operations.models.TypeModel;
 import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
+import nttdata.grupouno.com.operations.models.dto.MasterAccountDto;
 import nttdata.grupouno.com.operations.repositories.implementation.*;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class MasterAccountServices implements IMasterAccountServices {
+
+    private static final Logger logger = LogManager.getLogger(MasterAccountServices.class);
+
     @Autowired
     private MasterAccountRepository accountRepository;
     @Autowired
@@ -56,6 +63,7 @@ public class MasterAccountServices implements IMasterAccountServices {
                         clientModel.setNumberAccount(a.getNumberAccount());
                         clientModel.setStatus("T");
                         clientModel.setTypeAccount(a.getType().getCode());
+                        clientModel.setOpeningDate(a.getStartDate());
                         return a;
                     })
                     .flatMap(a -> accountClientRepositorio
@@ -102,7 +110,15 @@ public class MasterAccountServices implements IMasterAccountServices {
 
     @Override
     public Mono<MasterAccountModel> updateAccount(MasterAccountModel account, String id) {
-        return accountRepository.findById(id).flatMap(c -> accountRepository.save(account));
+        //return accountRepository.findById(id).flatMap(c -> accountRepository.save(account));
+        return accountRepository.findById(id).flatMap(c -> {
+            c.setAmount(account.getAmount());
+            c.setStatus(account.getStatus());
+            c.setStartDate(account.getStartDate());
+            c.setEndDate(account.getEndDate());
+            c.setCoinType(account.getCoinType());
+            return accountRepository.save(c);
+        });
     }
 
     @Override
@@ -151,5 +167,44 @@ public class MasterAccountServices implements IMasterAccountServices {
                                         return Flux.just(accountDetailDto);
                                     }));
                 });
+    }
+
+    @Override
+    public Mono<MasterAccountDto> validAccountBalance(String numberAccount, Double amount, Character movementType) {
+        logger.debug("Cuenta " + numberAccount);
+        MasterAccountDto masterAccountDto = new MasterAccountDto();
+        Date today = new Date();
+
+        // validamos si superó la cantidad de transacciones para considerar la comisión
+        return movementDetailRepository.countByNumberAccountAndMovementTypeAndMonthAndYear(numberAccount,'D', Util.getMonth(today),Util.getYear(today)).flatMap(x -> {
+
+            return movementDetailRepository.countByNumberAccountAndMovementTypeAndMonthAndYear(numberAccount,'R',Util.getMonth(today),Util.getYear(today))
+                    .flatMap(y -> {
+                        Integer total = y.intValue() + x.intValue();
+                        logger.debug("total movimientos " + total);
+
+                        return findByAccount(numberAccount).flatMap(
+                                z -> {
+                                    Double commision = 0.0;
+                                    logger.debug("Monto cuenta " + z.getAmount());
+                                    if(z.getType().getCountLimitOperation()<=total){
+                                        commision =  z.getType().getAmountCommission();
+                                    }
+                                    if (z.getAmount() - commision >=amount){
+                                        z.setAmount(movementType=='R'?(z.getAmount()-amount-commision) : (z.getAmount() + amount - commision));
+                                        logger.debug("el saldo nuevo sería " + z.getAmount());
+                                        masterAccountDto.setBlSaldo(true);
+                                    }
+                                    else{
+                                        masterAccountDto.setBlSaldo(false);
+                                    }
+                                    masterAccountDto.setAccountModel(z);
+                                    return Mono.just(masterAccountDto);
+                                });
+
+                    });
+        });
+
+
     }
 }

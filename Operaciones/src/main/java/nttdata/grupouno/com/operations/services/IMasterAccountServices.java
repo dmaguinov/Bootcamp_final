@@ -3,6 +3,7 @@ package nttdata.grupouno.com.operations.services;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.MasterAccountModel;
 import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
+import nttdata.grupouno.com.operations.models.dto.MasterAccountDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,4 +18,5 @@ public interface IMasterAccountServices {
     Flux<MasterAccountModel> findByClient(String codeClient);
     Flux<MasterAccountModel> findByStartDateBetween(String from, String to);
     Flux<AccountDetailDto> findByStartDateBetweenDetail(String from, String to);
+    Mono<MasterAccountDto> validAccountBalance(String numberAccount, Double amount, Character movementType);
 }

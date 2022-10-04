@@ -30,4 +30,8 @@ public class AccountClientModel {
     private String typeAccount; // AHO% - CRE% - VIP%
     @Indexed
     private String idCartClient;
+    @NotEmpty
+    private String openingDate;
+    private String principalAccount; // S: SI - N: NO
 }
+

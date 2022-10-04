@@ -69,7 +69,7 @@ public final class Util {
     /**
      * Encript AES for Card Number Tarjet
      * @param pan
-     * @param codeClient
+     * @param idClient
      * @return
      */
     public static String encriptAES(String pan, String idClient){
@@ -127,5 +127,23 @@ public final class Util {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String dateTimeToString(Date date){
+        DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+        return formatter.format(date);
+    }
+
+    public static Date stringToDateTime(String dateString) {
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+        if (dateString == null){
+            return null;
+        }
+        try {
+            return formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
