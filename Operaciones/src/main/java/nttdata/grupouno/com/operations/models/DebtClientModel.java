@@ -22,5 +22,5 @@ public class DebtClientModel {
     private String issueDate;
     private String paymentDate;
     private String codeCredit;
-
+    private String paidBy;
 }

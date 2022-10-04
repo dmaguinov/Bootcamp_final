@@ -4,6 +4,7 @@ import nttdata.grupouno.com.operations.models.DebtClientModel;
 import nttdata.grupouno.com.operations.services.IDebtClientService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.services.IMovementDetailService;
+import nttdata.grupouno.com.operations.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,30 +74,37 @@ public class DebtClientController {
                                                              @PathVariable("codeClient") final String codeClient){
         Map<String, Object> response = new HashMap<>();
         String uriPayDebt= "/operation/debt/pay".concat(id);
+        Date today = new Date();
         return debtClientService.findById(id)
-                .filter(debtClientModel -> debtClientModel.getState().equals("P"))
-                .flatMap(a -> accountServices.findByClient(codeClient)
-                        .filter(model -> model.getAmount() > a.getAmount())
-                        .take(1).next()
-                        .flatMap(b -> movementDetailService.withdrawAmount(b.getId(),a.getAmount())
-                                .flatMap(c -> debtClientService.updatedDebt(id)
-                                        .flatMap(debt -> {
-                                            response.put("Deuda Cancelada", debt);
-                                            return Mono.just(ResponseEntity.created(URI.create(uriPayDebt))
-                                                    .body(response));
-                                        }).switchIfEmpty(Mono.empty().flatMap(o -> {
-                                    response.put("No se pudo realizar el pago", o);
+                .flatMap(a -> {
+                    if (a.getState().equals("C")){
+                        response.put("msg","La deuda se encuentra cancelada");
+                        return Mono.just(ResponseEntity.created(URI.create(uriPayDebt))
+                                .body(response));
+                    }
+                    return accountServices.findByClient(codeClient)
+                            .take(1).next()
+                            .flatMap(b -> {
+                                if (b.getAmount() < a.getAmount()){
+                                    response.put("msg","El Cliente no cuenta con saldo suficiente");
                                     return Mono.just(ResponseEntity.created(URI.create(uriPayDebt))
                                             .body(response));
-                                }))).switchIfEmpty(Mono.empty().flatMap(o -> {
-                                    response.put("El cliente no tiene saldo suficiente", o);
-                                    return Mono.just(ResponseEntity.created(URI.create(uriPayDebt))
-                                            .body(response));
-                                }))).switchIfEmpty(Mono.empty().flatMap(o -> {
-                            response.put("No existe deuda", o);
-                            return Mono.just(ResponseEntity.created(URI.create(uriPayDebt))
-                                    .body(response));
-                        })));
+                                }
+                                return movementDetailService.withdrawAmount(b.getId(),a.getAmount())
+                                        .flatMap(c -> {
+                                            a.setState("C");
+                                            a.setPaymentDate(Util.dateToString(today));
+                                            a.setPaidBy(codeClient);
+                                            return debtClientService.updatedDebt(id ,a)
+                                                    .flatMap(debt -> {
+                                                        response.put("msg", "Deuda cancelada con exitó");
+                                                        response.put("dbt", debt);
+                                                        return Mono.just(ResponseEntity.created(URI.create(uriPayDebt))
+                                                                .body(response));
+                                                    });
+                                        });
+                            });
+                });
     }
 
     @DeleteMapping("/{id}")

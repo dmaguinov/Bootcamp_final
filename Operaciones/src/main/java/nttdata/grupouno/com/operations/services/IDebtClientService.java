@@ -14,7 +14,7 @@ public interface IDebtClientService {
 
     Mono<DebtClientModel> createdDebt(DebtClientModel debt);
 
-    Mono<DebtClientModel> updatedDebt(String id);
+    Mono<DebtClientModel> updatedDebt(String id, DebtClientModel debt);
 
     Mono<Void> deleteDebtById(String id);
 }

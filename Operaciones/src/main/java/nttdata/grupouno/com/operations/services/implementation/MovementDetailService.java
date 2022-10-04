@@ -152,7 +152,7 @@ public class MovementDetailService implements IMovementDetailService {
                                         return null;
                                     }
                                 }else{
-                                    m.setAmount(m.getAmount() + amount);
+                                    m.setAmount(m.getAmount() - amount);
                                     movement.setCommission(0.0);
                                 }
 

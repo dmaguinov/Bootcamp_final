@@ -4,21 +4,19 @@ import nttdata.grupouno.com.operations.models.DebtClientModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.DebitClientRepository;
 import nttdata.grupouno.com.operations.services.IDebtClientService;
-import nttdata.grupouno.com.operations.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import java.util.Date;
 import java.util.UUID;
 
 @Service
 public class DebtClientService implements IDebtClientService {
 
     @Autowired
-    DebitClientRepository debitClientRepository;
+    private DebitClientRepository debitClientRepository;
     @Autowired
-    AccountClientRepositorio clientRepositorio;
+    private AccountClientRepositorio clientRepositorio;
 
     @Override
     public Flux<DebtClientModel> findAll() {
@@ -44,13 +42,10 @@ public class DebtClientService implements IDebtClientService {
     }
 
     @Override
-    public Mono<DebtClientModel> updatedDebt(String id) {
-        Date today = new Date();
-        return debitClientRepository.findById(id).flatMap(debtClientModel -> {
-            debtClientModel.setState("C");
-            debtClientModel.setPaymentDate(Util.dateToString(today));
-            return debitClientRepository.save(debtClientModel);
-        }).switchIfEmpty(Mono.empty());
+    public Mono<DebtClientModel> updatedDebt(String id, DebtClientModel debt) {
+        return debitClientRepository.findById(id)
+                .flatMap(a -> debitClientRepository.save(debt))
+                .switchIfEmpty(Mono.empty());
     }
 
     @Override
