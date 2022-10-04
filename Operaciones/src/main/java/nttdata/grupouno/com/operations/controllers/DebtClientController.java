@@ -25,11 +25,11 @@ import java.util.Map;
 public class DebtClientController {
 
     @Autowired
-    IDebtClientService debtClientService;
+    private IDebtClientService debtClientService;
     @Autowired
-    IMasterAccountServices accountServices;
+    private IMasterAccountServices accountServices;
     @Autowired
-    IMovementDetailService movementDetailService;
+    private IMovementDetailService movementDetailService;
 
     @PostMapping
     public Mono<ResponseEntity<Map<String, Object>>> createDebt(@Valid @RequestBody Mono<DebtClientModel> request){
