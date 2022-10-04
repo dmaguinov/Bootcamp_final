@@ -1,10 +1,11 @@
-package nttdata.grupouno.com.operations.services.implementation;
+package nttdata.grupouno.com.operations.services;
 
 import lombok.RequiredArgsConstructor;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.models.DebtClientModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
 import nttdata.grupouno.com.operations.repositories.implementation.DebitClientRepository;
+import nttdata.grupouno.com.operations.services.implementation.DebtClientService;
 import nttdata.grupouno.com.operations.util.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
