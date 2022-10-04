@@ -1,18 +1,18 @@
-package nttdata.grupouno.com.clients.services.implementation.dto;
+package nttdata.grupouno.com.Clients.services.implementation.dto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import nttdata.grupouno.com.clients.convert.ClientsConvert;
-import nttdata.grupouno.com.clients.models.Clients;
-import nttdata.grupouno.com.clients.models.LegalPerson;
-import nttdata.grupouno.com.clients.models.MasterAccount;
-import nttdata.grupouno.com.clients.models.MovementDetail;
-import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
-import nttdata.grupouno.com.clients.repositories.LegalPersonRepository;
-import nttdata.grupouno.com.clients.services.ClientsService;
-import nttdata.grupouno.com.clients.services.dto.ClientsLegalService;
+import nttdata.grupouno.com.Clients.convert.ClientsConvert;
+import nttdata.grupouno.com.Clients.models.Clients;
+import nttdata.grupouno.com.Clients.models.LegalPerson;
+import nttdata.grupouno.com.Clients.models.MasterAccount;
+import nttdata.grupouno.com.Clients.models.MovementDetail;
+import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.Clients.repositories.LegalPersonRepository;
+import nttdata.grupouno.com.Clients.services.ClientsService;
+import nttdata.grupouno.com.Clients.services.dto.ClientsLegalService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

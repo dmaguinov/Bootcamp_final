@@ -1,9 +1,9 @@
-package nttdata.grupouno.com.clients.convert;
+package nttdata.grupouno.com.Clients.convert;
 
 import org.springframework.stereotype.Component;
 
-import nttdata.grupouno.com.clients.models.Clients;
-import nttdata.grupouno.com.clients.models.dto.NaturalClients;
+import nttdata.grupouno.com.Clients.models.Clients;
+import nttdata.grupouno.com.Clients.models.dto.NaturalClients;
 
 @Component
 public class NaturalClientsConvert {

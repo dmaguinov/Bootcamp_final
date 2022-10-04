@@ -1,8 +1,8 @@
-package nttdata.grupouno.com.clients.services;
+package nttdata.grupouno.com.Clients.services;
 
-import nttdata.grupouno.com.clients.models.Clients;
-import nttdata.grupouno.com.clients.models.dto.ClientsLegal;
-import nttdata.grupouno.com.clients.models.dto.ClientsNatural;
+import nttdata.grupouno.com.Clients.models.Clients;
+import nttdata.grupouno.com.Clients.models.dto.ClientsLegal;
+import nttdata.grupouno.com.Clients.models.dto.ClientsNatural;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

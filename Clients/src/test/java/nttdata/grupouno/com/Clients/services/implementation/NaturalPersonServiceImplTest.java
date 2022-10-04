@@ -1,8 +1,8 @@
-package nttdata.grupouno.com.clients.services.implementation;
+package nttdata.grupouno.com.Clients.services.implementation;
 
 import lombok.RequiredArgsConstructor;
-import nttdata.grupouno.com.clients.models.NaturalPerson;
-import nttdata.grupouno.com.clients.repositories.NaturalPersonRepository;
+import nttdata.grupouno.com.Clients.models.NaturalPerson;
+import nttdata.grupouno.com.Clients.repositories.NaturalPersonRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
