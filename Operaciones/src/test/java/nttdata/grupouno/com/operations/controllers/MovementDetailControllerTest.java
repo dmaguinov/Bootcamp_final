@@ -34,27 +34,27 @@ import static org.junit.jupiter.api.Assertions.*;
 class MovementDetailControllerTest {
 
     @InjectMocks
-    MovementDetailController detailController;
+    private MovementDetailController detailController;
     @Mock
-    MovementDetailService movementService;
+    private MovementDetailService movementService;
     @Mock
-    AccountClientService clientService;
+    private AccountClientService clientService;
     @Mock
-    MasterAccountServices masterAccountServices;
+    private MasterAccountServices masterAccountServices;
     @Autowired
-    MovementDetailModel modelD;
+    private MovementDetailModel modelD;
     @Autowired
-    MovementDetailModel modelR;
+    private MovementDetailModel modelR;
     @Autowired
     private TypeModel typeModel;
     @Autowired
     private TypeModel typeModelCorriente;
     @Autowired
-    MasterAccountModel accountModel;
+    private MasterAccountModel accountModel;
     @Autowired
-    MasterAccountModel accountModelCorriente;
+    private MasterAccountModel accountModelCorriente;
     @Autowired
-    AccountClientModel accountClientModel;
+    private AccountClientModel accountClientModel;
 
     @BeforeEach
     void init() {
