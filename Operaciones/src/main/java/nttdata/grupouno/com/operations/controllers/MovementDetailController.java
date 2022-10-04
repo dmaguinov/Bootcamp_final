@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,12 +34,6 @@ public class MovementDetailController {
     AccountClientService clientService;
     @Autowired
     MasterAccountServices masterAccountServices;
-
-    private final WebClient webClient;
-
-    public MovementDetailController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8010").build();
-    }
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
@@ -100,8 +93,8 @@ public class MovementDetailController {
         MasterAccountModel destinationAccount1 = new MasterAccountModel();
 
         Map<String, Object> respuesta = new HashMap<>();
-        Flux<MasterAccountModel> master = this.webClient.get().uri("/operation/account/all").retrieve().bodyToFlux(MasterAccountModel.class);
-        Flux<MasterAccountModel> master1 = this.webClient.get().uri("/operation/account/all").retrieve().bodyToFlux(MasterAccountModel.class);
+        Flux<MasterAccountModel> master = masterAccountServices.findAllAccount();
+        Flux<MasterAccountModel> master1 = masterAccountServices.findAllAccount();
         master.filter(a -> a.getNumberAccount().equals(rootAccount)).subscribe(b -> {
             rootAccount1.setNumberAccount(b.getNumberAccount());
             rootAccount1.setId(b.getId());
