@@ -77,9 +77,7 @@ public class AccountClientController {
         return accountClientService.findByidCartClient(idCartClient).flatMap(
                 a -> {
                     if (a.getPrincipalAccount().equals("S")){
-                        return masterAccountServices.findByAccount(a.getNumberAccount()).flatMap(b -> {
-                            return Mono.just(b);
-                        });
+                        return masterAccountServices.findByAccount(a.getNumberAccount());
                     }
                     return Mono.empty();
                 }).single();

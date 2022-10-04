@@ -8,7 +8,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,9 +59,15 @@ class CartClientControllerTest {
 
     @Test
     void createCard(){
+        Mockito.when(cartClientService.registerCardNumber(cartClientModel)).thenReturn(Mono.just(cartClientModel));
+
         cartClientController.createCard(Mono.just(cartClientModel)).subscribe(
             x -> {
-                
+                assertEquals(HttpStatus.CREATED, x.getStatusCode());
+                Map<String, Object> response = x.getBody();
+                if(response == null) response = new HashMap<>();
+                assertNotNull(response.get("tarjet"));
+                assertEquals(cartClientModel, response.get("tarjet"));
             }
         );
     }
