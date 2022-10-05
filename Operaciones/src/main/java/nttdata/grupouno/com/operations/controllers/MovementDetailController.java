@@ -159,7 +159,7 @@ public class MovementDetailController {
                                         return Mono.just(ResponseEntity.created(URI.create("/transfer"))
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .body(response));
-                                    });
+                                    }).defaultIfEmpty(ResponseEntity.badRequest().body(response));
                         }
                     });
         });

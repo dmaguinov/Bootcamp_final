@@ -200,7 +200,9 @@ public class MovementDetailService implements IMovementDetailService {
         Date today = new Date();
         return movementRepository.countByNumberAccountAndMovementTypeAndMonthAndYear(numberAccount,'M',Util.getMonth(today),Util.getYear(today))
                 .flatMap(aLong -> {
-                    if (aLong.intValue() == 0){
+                    if (aLong.intValue() != 0){
+                        return Mono.empty();
+                    }
                         return masterAccountServices.findByAccount(numberAccount).flatMap(m -> {
                             return countByAccountMonthYear(m.getNumberAccount(),Util.getMonth(today),Util.getYear(today))
                                     .flatMap(integer -> {
@@ -228,10 +230,6 @@ public class MovementDetailService implements IMovementDetailService {
                                         return masterAccountServices.updateAccount(m, m.getId());
                                     });
                         });
-                    }else{
-                        System.out.println("Ya existe un cobro de mantenimiento para el mes");
-                        return null;
-                    }
                 });
     }
 

@@ -1,0 +1,10 @@
+server:
+  port: 8020
+spring:
+  data:
+    mongodb:
+      URI: mongodb://localhost:27017/Wallet
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
