@@ -159,6 +159,7 @@ class MasterAccountControllerTest {
         typeModel.setCountPerson(3);
 
         Mockito.when(accountServices.findByAccount("12")).thenReturn(Mono.just(masteModel));
+        Mockito.when(accountClientService.validCreditAccountUntilToday("123","CRE2","J")).thenReturn(Mono.just(0L));
         Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.empty());
 
         response = masterAccountController.createAccountBank(Mono.just(modelRegister));
@@ -175,6 +176,7 @@ class MasterAccountControllerTest {
 
         /// Valid create account
         Mockito.when(accountServices.findByAccount("12")).thenReturn(Mono.empty());
+        Mockito.when(accountClientService.validCreditAccountUntilToday("123","CRE2","J")).thenReturn(Mono.just(0L));
         Mockito.when(accountServices.createAccount(masteModel, accountModel)).thenReturn(Mono.just(masteModel));
 
         response = masterAccountController.createAccountBank(Mono.just(modelRegister));

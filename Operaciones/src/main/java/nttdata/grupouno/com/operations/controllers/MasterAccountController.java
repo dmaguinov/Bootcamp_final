@@ -86,13 +86,18 @@ public class MasterAccountController {
                                                             .body(response));
                                                 })
                                                 .switchIfEmpty(
-                                                    accountServices.createAccount(a.getAccountModel(), a.getClientModel())
-                                                    .flatMap(e -> {
-                                                        response.put("account", e);
-                                                        return Mono.just(ResponseEntity.created(URI.create("/operation/account/bank"))
-                                                                        .body(response));
-                                                    })
-                                                    .switchIfEmpty(Mono.just(ResponseEntity.badRequest().body(response)))
+                                                        accountClientService.validCreditAccountUntilToday(a.getClientModel().getCodeClient(),"CRE2","J")
+                                                                .flatMap(aLong1 -> {
+                                                                    a.getClientModel().setPyme(aLong1.intValue());
+                                                                    return accountServices.createAccount(a.getAccountModel(), a.getClientModel())
+                                                                            .flatMap(e -> {
+                                                                                response.put("account", e);
+                                                                                return Mono.just(ResponseEntity.created(URI.create("/operation/account/bank"))
+                                                                                        .body(response));
+                                                                            })
+                                                                            .switchIfEmpty(Mono.just(ResponseEntity.badRequest().body(response)));
+                                                                })
+
                                                 );
                                     });
                                 });

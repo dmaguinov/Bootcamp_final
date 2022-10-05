@@ -17,4 +17,5 @@ public interface IAccountClientService {
     Mono<Long> countByCodeClientAndTypeAccountLike(String codeClient, String typeAccount);
     Mono<AccountClientModel> assignPrincipalAccount(AccountClientDto model);
     Flux<AccountClientModel> findByidCartClient(String idCartClient);
+    Mono<Long> validCreditAccountUntilToday(String codeClient, String typeAccount, String typeClient);
 }

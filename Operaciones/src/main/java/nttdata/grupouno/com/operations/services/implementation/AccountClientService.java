@@ -1,9 +1,12 @@
 package nttdata.grupouno.com.operations.services.implementation;
 
+import java.util.Date;
 import java.util.UUID;
 
 import nttdata.grupouno.com.operations.models.dto.AccountClientDto;
 import nttdata.grupouno.com.operations.repositories.implementation.CartClientRepositorio;
+import nttdata.grupouno.com.operations.repositories.implementation.MasterAccountRepository;
+import nttdata.grupouno.com.operations.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,8 @@ public class AccountClientService implements IAccountClientService {
     private IWebClientApiService webClient;
     @Autowired
     private CartClientRepositorio cartClientRepositorio;
+    @Autowired
+    private MasterAccountRepository accountRepository;
 
     @Override
     public Flux<AccountClientModel> findByCodeClient(String codeClient) {
@@ -121,5 +126,20 @@ public class AccountClientService implements IAccountClientService {
     @Override
     public Flux<AccountClientModel> findByidCartClient(String idCartClient) {
         return accountClientRepositorio.findByidCartClient(idCartClient);
+    }
+
+    @Override
+    public Mono<Long> validCreditAccountUntilToday(String codeClient, String typeAccount, String typeClient) {
+        Date today = new Date();
+        return accountClientRepositorio.findByCodeClientAndTypeAccountAndTypeClient(codeClient,typeAccount,typeClient)
+                .flatMap(a -> accountRepository.findByNumberAccount(a.getNumberAccount()))
+                        .filter(b-> Util.stringToDate(b.getStartDate()).compareTo(today) != 1).count()
+                .flatMap(aLong -> {
+                    if (aLong.intValue() == 0){
+                       return Mono.just(0L);
+                    }else{
+                        return Mono.just(1L);
+                    }
+                }).defaultIfEmpty(0L);
     }
 }
