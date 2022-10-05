@@ -8,6 +8,7 @@ import nttdata.grupouno.com.operations.models.TypeModel;
 import nttdata.grupouno.com.operations.models.dto.AccountDetailDto;
 import nttdata.grupouno.com.operations.models.dto.MasterAccountDto;
 import nttdata.grupouno.com.operations.repositories.implementation.*;
+import nttdata.grupouno.com.operations.services.AccountEventsService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -41,11 +42,16 @@ public class MasterAccountServices implements IMasterAccountServices {
     @Autowired
     private AccountConvert accountConvert;
 
+    private final AccountEventsService accountEventsService;
+
+    @Autowired
+    MasterAccountServices(AccountEventsService accountEventsService){this.accountEventsService = accountEventsService;}
+
     @Override
     public Mono<MasterAccountModel> createAccount(MasterAccountModel account, AccountClientModel clientModel) {
         account.setId(UUID.randomUUID().toString());
         account.setType(new TypeModel(account.getType().getCode(), null, null, null, null, null, null, null, null,null,null));
-
+        this.accountEventsService.publish(account);
         return webClientApiService.findClient(clientModel.getCodeClient()).
             flatMap(x -> {
                 if(!x.getId().equals(clientModel.getCodeClient())) return Mono.empty();
@@ -80,6 +86,10 @@ public class MasterAccountServices implements IMasterAccountServices {
                                         b.setIdCartClient(c.getId());
                                         return accountClientRepositorio.save(b);
                                     })
+                                        /*.flatMap(accountClientModel -> {
+                                            this.accountEventsService.publish(a);
+                                            return Mono.just(accountClientModel);
+                                        })*/
                                     .switchIfEmpty(Mono.just(b));
                             })
                         ).flatMap(b -> Mono.just(a))
