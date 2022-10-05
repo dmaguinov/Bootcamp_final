@@ -17,7 +17,7 @@ public class WalletModel {
     @Id
     private String id;
     @NotEmpty
-    private String codCliente;
+    private String codClient;
     @DecimalMin(value = "0.00", message = "Monto no negativo")
     private Double amount;
 }

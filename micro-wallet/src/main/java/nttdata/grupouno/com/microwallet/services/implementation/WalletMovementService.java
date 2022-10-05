@@ -1,7 +1,9 @@
 package nttdata.grupouno.com.microwallet.services.implementation;
 
+import nttdata.grupouno.com.microwallet.models.ClientWalletModel;
 import nttdata.grupouno.com.microwallet.models.WalletMovementModel;
 import nttdata.grupouno.com.microwallet.models.dto.WalletMovementDto;
+import nttdata.grupouno.com.microwallet.repositories.IClientWalletRepositories;
 import nttdata.grupouno.com.microwallet.repositories.IWalletMovementRepository;
 import nttdata.grupouno.com.microwallet.repositories.IWalletRepository;
 import nttdata.grupouno.com.microwallet.services.IClientWalletService;
@@ -24,23 +26,24 @@ public class WalletMovementService implements IWalletMovementService {
     private IWalletRepository IWalletRepository;
 
     @Autowired
-    private IClientWalletService clientWalletService;
+    private IClientWalletRepositories clientWalletRepositories;
 
     @Override
     public Mono<WalletMovementModel> registerMovement(WalletMovementDto walletMovementDto) {
-        return clientWalletService.findByNumberPhone(walletMovementDto.getCelular())
+        return clientWalletRepositories.findByNumberPhone(walletMovementDto.getNumberPhone())
                 .flatMap(x -> {
-                    if(walletMovementDto.getMovementType().equals("E")){
-                        return IWalletRepository.findByCodCliente(x.getId()).flatMap(y -> {
+                     return IWalletRepository.findByCodCliente(x.getId()).flatMap(y -> {
+                         if(walletMovementDto.getMovementType().equals("E")){
                             if(y.getAmount()<walletMovementDto.getAmount()){
                                 return Mono.empty();
                             }
-                            return Mono.just(x);
+                         }
+                         return Mono.just(y);
                         }).switchIfEmpty(Mono.empty());
-                    }
-                    return Mono.just(x);
                 })
-                .map(x ->  new WalletMovementModel(UUID.randomUUID().toString(), null, null, null, null, null, null, null ))
+                .map(x -> new ClientWalletModel(null,null,null,null,null,null))
+                .flatMap(x -> clientWalletRepositories.save(x))
+                .map(x ->  new WalletMovementModel(UUID.randomUUID().toString(), x.getId() , Util.dateTimeToString(new Date()), walletMovementDto.getAmount(), walletMovementDto.getMovementType(), walletMovementDto.getCurrency(), Util.getMonth(new Date()), Util.getYear(new Date()) ))
                 .flatMap(x -> IWalletMovementRepository.save(x))
                 .switchIfEmpty(Mono.empty());
     }

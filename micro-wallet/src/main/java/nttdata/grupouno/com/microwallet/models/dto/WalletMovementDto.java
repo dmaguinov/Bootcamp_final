@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class WalletMovementDto {
     @NotEmpty
-    private String celular;
+    private String numberPhone;
     @DecimalMin(value = "0.00", message = "Monto no negativo")
     private Double amount;
     @NotEmpty
