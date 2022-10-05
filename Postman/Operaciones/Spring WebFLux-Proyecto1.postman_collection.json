@@ -489,7 +489,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"numberDocument\": \"1234567\",\r\n    \"typeDocument\": \"DNI\",\r\n    \"numberPhone\": \"900000001\",\r\n    \"imeiPhone\":\"123456-465\",\r\n    \"email\":\"test@gmail.com\"\r\n}",
+					"raw": "{\r\n    \"numberDocument\": \"1234567\",\r\n    \"typeDocument\": \"DNI\",\r\n    \"numberPhone\": \"900000001\",\r\n    \"imeiPhone\":\"123456-465\",\r\n    \"email\":\"test@gmail.com\",\r\n    \"amount\": 0.00\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
