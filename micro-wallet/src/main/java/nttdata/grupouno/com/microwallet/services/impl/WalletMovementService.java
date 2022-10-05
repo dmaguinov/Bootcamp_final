@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Service
@@ -28,23 +29,6 @@ public class WalletMovementService implements IWalletMovementService {
 
     @Override
     public Mono<WalletMovementModel> registerMovement(WalletMovementDto walletMovementDto) {
-        return iClientMovilService.findByIdCelular(walletMovementDto.getCelular()).flatMap(x -> {
-            if(walletMovementDto.getMovementType().equals("E")){
-                walletRepository.findByCodCliente(x.getId()).flatMap(y -> {
-                    if(y.getAmount()<walletMovementDto.getAmount()){
-                        return Mono.empty();
-                    }
-                    return Mono.just(y);
-                }).switchIfEmpty(Mono.empty());
-            }
-            WalletMovementModel walletMovementModel = new WalletMovementModel();
-            walletMovementModel.setId(1);
-            walletMovementModel.setMovementType(walletMovementDto.getMovementType());
-            walletMovementModel.setDate(Util.dateTimeToString(new Date()));
-            walletMovementModel.setCurrency(walletMovementDto.getCurrency());
-            walletMovementModel.setMonth(Util.getMonth(new Date()));
-            walletMovementModel.setYear(Util.getYear(new Date()));
-            return walletMovementRepository.save(walletMovementModel);
-        }).switchIfEmpty(Mono.empty());
+        return null;
     }
 }
