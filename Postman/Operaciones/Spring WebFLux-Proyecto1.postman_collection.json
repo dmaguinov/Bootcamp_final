@@ -76,7 +76,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://root:s3cr3t@localhost:8888/operation-services/default",
+					"raw": "http://root:s3cr3t@localhost:8888/wallet-service/default",
 					"protocol": "http",
 					"auth": {
 						"user": "root",
@@ -87,7 +87,7 @@
 					],
 					"port": "8888",
 					"path": [
-						"operation-services",
+						"wallet-service",
 						"default"
 					]
 				}
@@ -406,6 +406,77 @@
 						"cartClient",
 						"hs",
 						"a84f088d7f8c3838010af36a900b0dbd22ae3cc4439ab8a724a40ad48c30e0c3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lista 10 movimientos por tarjeta",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8001/operation/cartClient/movements/4152195099104223",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"operation",
+						"cartClient",
+						"movements",
+						"4152195099104223"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registro redis -type document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":\"EXT\",\r\n    \"title\":\"EXT\",\r\n    \"description\":\"Carnet de extranjeria\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8020/wallet/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8020",
+					"path": [
+						"wallet",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lista todo redis- type document",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8020/wallet/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8020",
+					"path": [
+						"wallet",
+						"all"
 					]
 				}
 			},
