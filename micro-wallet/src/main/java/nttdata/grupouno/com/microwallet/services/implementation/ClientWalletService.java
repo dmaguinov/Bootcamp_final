@@ -31,4 +31,9 @@ public class ClientWalletService implements IClientWalletService {
     public Mono<ClientWalletModel> findByNumberPhone(String number) {
         return clientWalletRepositories.findByNumberPhone(number);
     }
+
+    @Override
+    public Mono<ClientWalletModel> findById(String id) {
+        return clientWalletRepositories.findById(id);
+    }
 }
