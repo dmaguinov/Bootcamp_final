@@ -1,4 +1,4 @@
-package nttdata.grupouno.com.microwallet.services.impl;
+package nttdata.grupouno.com.microwallet.services.implementation;
 
 import nttdata.grupouno.com.microwallet.models.WalletMovementModel;
 import nttdata.grupouno.com.microwallet.models.dto.WalletMovementDto;

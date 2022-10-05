@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 public class WalletMovementModel {
 
     @Id
-    private Integer id;
+    private String id;
     @NotEmpty
     private String codWallet;
     private String date;

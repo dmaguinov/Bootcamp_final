@@ -1,6 +1,5 @@
 package nttdata.grupouno.com.microwallet.repositories.redis;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.stereotype.Component;
@@ -9,7 +8,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
 
-@Slf4j
 @Component
 public class ReactiveRedisComponent {
     @Autowired

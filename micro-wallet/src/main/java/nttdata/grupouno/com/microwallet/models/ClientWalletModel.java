@@ -1,34 +1,31 @@
 package nttdata.grupouno.com.microwallet.models;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "clientMovil")
-public class ClientMovilModel {
-
+@Document(collection = "clientWallet")
+public class ClientWalletModel {
     @Id
     private String id;
     @NotEmpty
-    private String documento;
-
+    private String numberDocument;
     @NotEmpty
-    private String celular;
-
+    private String typeDocument;
     @NotEmpty
-    private String imei;
-
+    @Indexed(unique=true)
+    private String numberPhone;
     @NotEmpty
-    private String correo;
-
-    @NotEmpty
-    private String documentType; //  DNI , CEX , PASS
+    private String imeiPhone;
+    @Email
+    private String email;
 }
