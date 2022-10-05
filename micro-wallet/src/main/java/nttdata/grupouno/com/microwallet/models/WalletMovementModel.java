@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "WalletMovementDetail")
-public class WalletMovementDetail {
+@Document(collection = "WalletMovement")
+public class WalletMovementModel {
 
     @Id
     private Integer id;

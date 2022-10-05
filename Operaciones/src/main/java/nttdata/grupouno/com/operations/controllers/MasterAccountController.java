@@ -139,7 +139,7 @@ public class MasterAccountController {
      * @return
      */
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<MasterAccountModel>> update(@Valid @RequestBody final MasterAccountModel account,
+    public  Mono<ResponseEntity<MasterAccountModel>>update(@Valid @RequestBody final MasterAccountModel account,
             @PathVariable final String id) {
         return accountServices.updateAccount(account, id)
                 .map(c -> ResponseEntity.created(URI.create("/account/".concat(c.getId())))
