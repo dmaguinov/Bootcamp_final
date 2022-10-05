@@ -10,4 +10,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Document(collection = "Wallet")
 public class Wallet {
+    private String id;
 }
