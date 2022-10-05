@@ -15,7 +15,7 @@ import javax.validation.constraints.NotEmpty;
 @Document(collection = "wallet")
 public class WalletModel {
     @Id
-    private Integer id;
+    private String id;
     @NotEmpty
     private String codCliente;
     @DecimalMin(value = "0.00", message = "Monto no negativo")

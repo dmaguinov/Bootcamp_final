@@ -26,4 +26,9 @@ public class ClientWalletService implements IClientWalletService {
     public Mono<ClientWalletModel> findByNumberDocumentAndTypeDocument(String numberDocument, String typeDocument) {
         return clientWalletRepositories.findByNumberDocumentAndTypeDocument(numberDocument, typeDocument);
     }
+
+    @Override
+    public Mono<ClientWalletModel> findByNumberPhone(String number) {
+        return clientWalletRepositories.findByNumberPhone(number);
+    }
 }
