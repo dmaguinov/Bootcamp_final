@@ -448,12 +448,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8020/wallet/",
+					"raw": "http://localhost:8001/wallet/",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8020",
+					"port": "8001",
 					"path": [
 						"wallet",
 						""
@@ -468,15 +468,45 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8020/wallet/all",
+					"raw": "http://localhost:8001/wallet/all",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8020",
+					"port": "8001",
 					"path": [
 						"wallet",
 						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register client wallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"numberDocument\": \"1234567\",\r\n    \"typeDocument\": \"DNI\",\r\n    \"numberPhone\": \"900000001\",\r\n    \"imeiPhone\":\"123456-465\",\r\n    \"email\":\"test@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/wallet/client/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"wallet",
+						"client",
+						""
 					]
 				}
 			},
