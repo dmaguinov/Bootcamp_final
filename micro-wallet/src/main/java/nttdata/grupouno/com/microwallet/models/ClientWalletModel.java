@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
@@ -28,4 +29,7 @@ public class ClientWalletModel {
     private String imeiPhone;
     @Email
     private String email;
+    @DecimalMin(value = "0.00", message = "Monto no negativo")
+    private Double amount;
+    private String targetAssociated; // ID: Tarjeta asociada en caso de asociación, caso contrario null por defecto
 }
