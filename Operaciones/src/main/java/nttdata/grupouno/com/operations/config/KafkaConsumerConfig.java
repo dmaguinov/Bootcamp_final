@@ -1,4 +1,4 @@
-package nttdata.grupouno.com.microwallet.config;
+package nttdata.grupouno.com.operations.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -9,36 +9,13 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import nttdata.grupouno.com.microwallet.models.ClientWalletModel;
+import nttdata.grupouno.com.operations.models.ClientWalletModel;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class KafkaConsumerConfig {
-    @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
-        Map<String, Object> config = new HashMap<>();
-
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9091");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
-        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(JsonDeserializer.USE_TYPE_INFO_HEADERS,false);
-        config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-
-        return new DefaultKafkaConsumerFactory<>(config);
-    }
-
-
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
-    }
-
-
     @Bean
     public ConsumerFactory<String, ClientWalletModel> userConsumerFactory() {
         Map<String, Object> config = new HashMap<>();
@@ -49,7 +26,6 @@ public class KafkaConsumerConfig {
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         config.put(JsonDeserializer.USE_TYPE_INFO_HEADERS,false);
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(),
                 new JsonDeserializer<>(ClientWalletModel.class));
     }
@@ -61,3 +37,4 @@ public class KafkaConsumerConfig {
         return factory;
     }
 }
+
