@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumerService {
     @KafkaListener(topics = "account-topic", groupId = "group_json", containerFactory = "accountKafkaListenerFactory")
     public MasterAccount consumeJsonAccount(MasterAccount account) {
-        System.out.println("Consumed JSON Message: " + account);
+        System.out.println("Se ha creado la siguiente cuenta: " + account);
         return account;
     }
 }

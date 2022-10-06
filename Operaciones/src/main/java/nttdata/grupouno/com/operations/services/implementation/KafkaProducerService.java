@@ -14,7 +14,7 @@ public class KafkaProducerService {
 
     private final KafkaTemplate<String, MasterAccountModel> kafkaTemplate;
 
-    public KafkaProducerService(@Qualifier("kafkaProducerTemplate") KafkaTemplate<String, MasterAccountModel> kafkaTemplate) {
+    public KafkaProducerService(@Qualifier("kafkaAccountTemplate") KafkaTemplate<String, MasterAccountModel> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
