@@ -26,11 +26,22 @@ public class ClientWalletService implements IClientWalletService {
     public Mono<ClientWalletModel> register(ClientWalletModel model) {
         if(model.getNumberDocument() == null || model.getNumberDocument().isBlank())
             return Mono.empty();
-        model.setId(UUID.randomUUID().toString());
+        ClientWalletModel data = new ClientWalletModel();
+        data.setTargetAssociated(model.getTargetAssociated());
+        data.setId(UUID.randomUUID().toString());
+
+        model.setId(data.getId());
+        model.setTargetAssociated(null);
 
         return clientWalletRepositories.save(model)
             .doOnSuccess(
-                x ->  kafkaTemplate.send(TOPIC, x)
+                x ->  
+                {
+                    if(data.getTargetAssociated() != null && !data.getTargetAssociated().isBlank())
+                    {
+                        kafkaTemplate.send(TOPIC, data);
+                    }
+                }
             );
     }
 
