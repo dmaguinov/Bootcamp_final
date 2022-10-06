@@ -8,6 +8,7 @@ import nttdata.grupouno.com.operations.services.IDebtClientService;
 import nttdata.grupouno.com.operations.services.IMasterAccountServices;
 import nttdata.grupouno.com.operations.services.ITypeAccountService;
 
+import nttdata.grupouno.com.operations.services.implementation.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class MasterAccountController {
     private IAccountClientService accountClientService;
     @Autowired
     private IDebtClientService debtClientService;
+    private final KafkaProducerService kafkaProducerService;
+
+    @Autowired
+    MasterAccountController(KafkaProducerService kafkaProducerService) {
+        this.kafkaProducerService = kafkaProducerService;
+    }
 
     public Mono<ResponseEntity<Map<String, Object>>> fallbackBank(RuntimeException runtimeException){
         Map<String, Object> response = new HashMap<>();
@@ -89,7 +96,11 @@ public class MasterAccountController {
                                                         accountClientService.validCreditAccountUntilToday(a.getClientModel().getCodeClient(),"CRE2","J")
                                                                 .flatMap(aLong1 -> {
                                                                     a.getClientModel().setPyme(aLong1.intValue());
-                                                                    return accountServices.createAccount(a.getAccountModel(), a.getClientModel())
+                                                                    Mono<MasterAccountModel> accountModelMono = accountServices.createAccount(a.getAccountModel(), a.getClientModel())
+                                                                            .doOnSuccess(accountModel -> {
+                                                                                this.kafkaProducerService.sendMessage(accountModel);
+                                                                            });
+                                                                    return accountModelMono
                                                                             .flatMap(e -> {
                                                                                 response.put("account", e);
                                                                                 return Mono.just(ResponseEntity.created(URI.create("/operation/account/bank"))
