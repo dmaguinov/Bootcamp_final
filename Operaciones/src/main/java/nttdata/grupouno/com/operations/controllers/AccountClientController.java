@@ -50,7 +50,7 @@ public class AccountClientController {
         return request.flatMap(x -> accountClientService.assignPrincipalAccount(x)
                         .flatMap(
                                 y -> {
-                                    response.put("account client", y);
+                                    response.put("account client principal", y);
                                     return Mono.just(ResponseEntity.created(URI.create("/operation/accountClient/")).body(response));
                                 }
                         )

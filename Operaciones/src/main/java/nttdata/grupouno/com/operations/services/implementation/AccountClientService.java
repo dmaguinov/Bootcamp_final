@@ -10,6 +10,7 @@ import nttdata.grupouno.com.operations.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Service;
 import nttdata.grupouno.com.operations.models.AccountClientModel;
 import nttdata.grupouno.com.operations.repositories.implementation.AccountClientRepositorio;
@@ -89,30 +90,18 @@ public class AccountClientService implements IAccountClientService {
         return cartClientRepositorio.findById(model.getIdCartClient()).flatMap(a -> {
             //Las tarjetas de debito se pueden a sociar a diferentes cuentas y una de ellas ser principal
             if("AHO".equals(a.getTypeCart())) {
-                return accountClientRepositorio.findByIdCartClientAndNumberAccount(model.getIdCartClient(), model.getNumberAccount()).flatMap(b -> {
+                return accountClientRepositorio.findByIdCartClientAndNumberAccount(model.getIdCartClient(), model.getNumberAccount())
+                        .flatMap(b -> {
                             b.setPrincipalAccount("S");
                             return accountClientRepositorio.findByIdCartClient(model.getIdCartClient() )
                                     .flatMap(c -> {
                                         c.setPrincipalAccount("N");
-                                        return accountClientRepositorio.save(c).flatMap(d -> accountClientRepositorio.save(b));
-                                    })
-                                    .switchIfEmpty(accountClientRepositorio.save(b))
-                                    .single()
-                                    .flatMap(e -> Mono.just(b));
-                        }) .switchIfEmpty(
-                                accountClientRepositorio.findByCodeClientAndNumberAccount(model.getCodeClient(), model.getNumberAccount())
-                        )
-                        .single()
-                        .flatMap(f -> {
-                            f.setIdCartClient(model.getIdCartClient());
-                            f.setPrincipalAccount("S");
-
-                            return accountClientRepositorio.findByIdCartClient(model.getIdCartClient() )
-                                    .flatMap(g -> {
-                                        g.setPrincipalAccount("N");
-                                        return accountClientRepositorio.save(g).flatMap(h -> accountClientRepositorio.save(f));
-                                    }).single()
-                                    .switchIfEmpty(Mono.empty());
+                                        return accountClientRepositorio.save(c);
+                                    }).next().flatMap(x ->{
+                                        return Mono.just(b);
+                                    });
+                        }).flatMap(e -> {
+                            return  accountClientRepositorio.save(e);
                         });
             }
             else{
