@@ -3445,3 +3445,157 @@ Original Stack Trace:
 2022-10-07 07:53:17.129  INFO LAPTOP-LTI5PG0G --- [ionShutdownHook] c.n.d.DiscoveryClient                    : Unregistering ...
 2022-10-07 07:53:17.146  INFO LAPTOP-LTI5PG0G --- [ionShutdownHook] c.n.d.DiscoveryClient                    : DiscoveryClient_OPERATION-SERVICES/host.docker.internal:operation-services:8010 - deregister  status: 200
 2022-10-07 07:53:17.154  INFO LAPTOP-LTI5PG0G --- [ionShutdownHook] c.n.d.DiscoveryClient                    : Completed shut down of DiscoveryClient
+2022-10-07 07:53:29.397  INFO LAPTOP-LTI5PG0G --- [kground-preinit] o.h.v.i.u.Version                        : HV000001: Hibernate Validator 6.2.4.Final
+2022-10-07 07:53:31.466  INFO LAPTOP-LTI5PG0G --- [           main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2022-10-07 07:53:34.915  INFO LAPTOP-LTI5PG0G --- [           main] c.c.c.ConfigServicePropertySourceLocator : Located environment: name=operation-services, profiles=[default], label=null, version=dc23d83b8c5e446e973c0a1af85125c388a33986, state=null
+2022-10-07 07:53:34.918  INFO LAPTOP-LTI5PG0G --- [           main] b.c.PropertySourceBootstrapConfiguration : Located property source: [BootstrapPropertySource {name='bootstrapProperties-configClient'}, BootstrapPropertySource {name='bootstrapProperties-https://github.com/FranciscoCY/Entregable_uno.git/file:C:\Users\DANIEL\AppData\Local\Temp\config-repo-15667010891174549500\Config-Data\operation-services.yml'}]
+2022-10-07 07:53:34.931  INFO LAPTOP-LTI5PG0G --- [           main] n.g.c.o.OperationsApplication            : No active profile set, falling back to 1 default profile: "default"
+2022-10-07 07:53:36.725  INFO LAPTOP-LTI5PG0G --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Reactive MongoDB repositories in DEFAULT mode.
+2022-10-07 07:53:37.054  INFO LAPTOP-LTI5PG0G --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 317 ms. Found 6 Reactive MongoDB repository interfaces.
+2022-10-07 07:53:37.707  INFO LAPTOP-LTI5PG0G --- [           main] o.s.c.c.s.GenericScope                   : BeanFactory id=faceba59-16a4-3e69-aead-2b2548bbc684
+2022-10-07 07:53:37.934  INFO LAPTOP-LTI5PG0G --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-10-07 07:53:37.938  INFO LAPTOP-LTI5PG0G --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-10-07 07:53:37.941  INFO LAPTOP-LTI5PG0G --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'reactorDeferringLoadBalancerExchangeFilterFunction' of type [org.springframework.cloud.client.loadbalancer.reactive.DeferringLoadBalancerExchangeFilterFunction] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-10-07 07:53:40.174  INFO LAPTOP-LTI5PG0G --- [           main] o.m.d.client                             : MongoClient with metadata {"driver": {"name": "mongo-java-driver|reactive-streams|spring-boot", "version": "4.6.1"}, "os": {"type": "Windows", "name": "Windows 10", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/11.0.16.1+1-LTS-1"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, streamFactoryFactory=NettyStreamFactoryFactory{eventLoopGroup=io.netty.channel.nio.NioEventLoopGroup@4ec0229c, socketChannelClass=class io.netty.channel.socket.nio.NioSocketChannel, allocator=PooledByteBufAllocator(directByDefault: true), sslContext=null}, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@173a5fad], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.Jep395RecordCodecProvider@2ce47652]}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='30000 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, sendBufferSize=0}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, sendBufferSize=0}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@65d90b7f], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, contextProvider=null}
+2022-10-07 07:53:40.415  WARN LAPTOP-LTI5PG0G --- [           main] o.s.d.c.CustomConversions                : Registering converter from class java.time.LocalDateTime to class org.joda.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type; You might want to check your annotation setup at the converter implementation
+2022-10-07 07:53:40.880  WARN LAPTOP-LTI5PG0G --- [           main] o.s.d.c.CustomConversions                : Registering converter from class java.time.LocalDateTime to class org.joda.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type; You might want to check your annotation setup at the converter implementation
+2022-10-07 07:53:42.469  INFO LAPTOP-LTI5PG0G --- [localhost:27017] o.m.d.connection                         : Opened connection [connectionId{localValue:1, serverValue:140}] to localhost:27017
+2022-10-07 07:53:42.469  INFO LAPTOP-LTI5PG0G --- [localhost:27017] o.m.d.connection                         : Opened connection [connectionId{localValue:2, serverValue:139}] to localhost:27017
+2022-10-07 07:53:42.471  INFO LAPTOP-LTI5PG0G --- [localhost:27017] o.m.d.cluster                            : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=17, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=125889900}
+2022-10-07 07:53:45.266  INFO LAPTOP-LTI5PG0G --- [           main] o.s.b.a.e.w.EndpointLinksResolver        : Exposing 26 endpoint(s) beneath base path '/actuator'
+2022-10-07 07:53:46.958  INFO LAPTOP-LTI5PG0G --- [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2022-10-07 07:53:47.084  WARN LAPTOP-LTI5PG0G --- [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2022-10-07 07:53:47.212  INFO LAPTOP-LTI5PG0G --- [           main] o.s.c.n.e.InstanceInfoFactory            : Setting initial instance status as: STARTING
+2022-10-07 07:53:47.299  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Initializing Eureka in region us-east-1
+2022-10-07 07:53:47.311  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.s.r.a.ConfigClusterResolver        : Resolving eureka endpoints via configuration
+2022-10-07 07:53:47.385  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Disable delta property : false
+2022-10-07 07:53:47.385  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Single vip registry refresh property : null
+2022-10-07 07:53:47.385  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Force full registry fetch : false
+2022-10-07 07:53:47.386  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Application is null : false
+2022-10-07 07:53:47.386  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Registered Applications size is zero : true
+2022-10-07 07:53:47.386  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Application version is -1: true
+2022-10-07 07:53:47.386  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Getting all instance registry info from the eureka server
+2022-10-07 07:53:47.887  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : The response status is 200
+2022-10-07 07:53:47.890  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Starting heartbeat executor: renew interval is: 30
+2022-10-07 07:53:47.894  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.InstanceInfoReplicator             : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2022-10-07 07:53:47.902  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Discovery Client initialized at timestamp 1665147227900 with initial instances count: 4
+2022-10-07 07:53:47.903  INFO LAPTOP-LTI5PG0G --- [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application OPERATION-SERVICES with eureka with status UP
+2022-10-07 07:53:47.904  INFO LAPTOP-LTI5PG0G --- [           main] c.n.d.DiscoveryClient                    : Saw local status change event StatusChangeEvent [timestamp=1665147227904, current=UP, previous=STARTING]
+2022-10-07 07:53:47.907  INFO LAPTOP-LTI5PG0G --- [nfoReplicator-0] c.n.d.DiscoveryClient                    : DiscoveryClient_OPERATION-SERVICES/host.docker.internal:operation-services:8010: registering service...
+2022-10-07 07:53:47.985  INFO LAPTOP-LTI5PG0G --- [nfoReplicator-0] c.n.d.DiscoveryClient                    : DiscoveryClient_OPERATION-SERVICES/host.docker.internal:operation-services:8010 - registration status: 204
+2022-10-07 07:53:48.010  INFO LAPTOP-LTI5PG0G --- [           main] o.a.k.c.c.ConsumerConfig                 : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-group_json-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = group_json
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2022-10-07 07:53:48.174  WARN LAPTOP-LTI5PG0G --- [           main] o.a.k.c.c.ConsumerConfig                 : The configuration 'spring.json.trusted.packages' was supplied but isn't a known config.
+2022-10-07 07:53:48.174  WARN LAPTOP-LTI5PG0G --- [           main] o.a.k.c.c.ConsumerConfig                 : The configuration 'spring.json.use.type.headers' was supplied but isn't a known config.
+2022-10-07 07:53:48.178  INFO LAPTOP-LTI5PG0G --- [           main] o.a.k.c.u.AppInfoParser                  : Kafka version: 3.1.1
+2022-10-07 07:53:48.178  INFO LAPTOP-LTI5PG0G --- [           main] o.a.k.c.u.AppInfoParser                  : Kafka commitId: 97671528ba54a138
+2022-10-07 07:53:48.178  INFO LAPTOP-LTI5PG0G --- [           main] o.a.k.c.u.AppInfoParser                  : Kafka startTimeMs: 1665147228174
+2022-10-07 07:53:48.184  INFO LAPTOP-LTI5PG0G --- [           main] o.a.k.c.c.KafkaConsumer                  : [Consumer clientId=consumer-group_json-1, groupId=group_json] Subscribed to topic(s): Kafka_target
+2022-10-07 07:53:48.301  INFO LAPTOP-LTI5PG0G --- [           main] o.s.b.w.e.n.NettyWebServer               : Netty started on port 8010
+2022-10-07 07:53:48.303  INFO LAPTOP-LTI5PG0G --- [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8010
+2022-10-07 07:53:48.922  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.Metadata                         : [Consumer clientId=consumer-group_json-1, groupId=group_json] Resetting the last seen epoch of partition Kafka_target-0 to 0 since the associated topicId changed from null to rCZmkVpeSJWPACPzIgwUgQ
+2022-10-07 07:53:48.926  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.Metadata                         : [Consumer clientId=consumer-group_json-1, groupId=group_json] Cluster ID: 6TD1wq7pQOaINRYoUrvPvg
+2022-10-07 07:53:48.928  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Discovered group coordinator host.docker.internal:9092 (id: 2147483647 rack: null)
+2022-10-07 07:53:48.932  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] (Re-)joining group
+2022-10-07 07:53:48.954  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Request joining group due to: need to re-join with the given member-id
+2022-10-07 07:53:48.955  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] (Re-)joining group
+2022-10-07 07:53:49.080  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Successfully joined group with generation Generation{generationId=56, memberId='consumer-group_json-1-8aac0305-c090-41be-a7c4-81cf6d9b7898', protocol='range'}
+2022-10-07 07:53:49.145  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Successfully synced group in generation Generation{generationId=56, memberId='consumer-group_json-1-8aac0305-c090-41be-a7c4-81cf6d9b7898', protocol='range'}
+2022-10-07 07:53:49.152  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Notifying assignor about the new Assignment(partitions=[Kafka_target-0])
+2022-10-07 07:53:49.159  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Adding newly assigned partitions: Kafka_target-0
+2022-10-07 07:53:49.179  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.a.k.c.c.i.ConsumerCoordinator          : [Consumer clientId=consumer-group_json-1, groupId=group_json] Setting offset for partition Kafka_target-0 to the committed offset FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[host.docker.internal:9092 (id: 0 rack: null)], epoch=0}}
+2022-10-07 07:53:49.180  INFO LAPTOP-LTI5PG0G --- [ntainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : group_json: partitions assigned: [Kafka_target-0]
+2022-10-07 07:53:50.562  INFO LAPTOP-LTI5PG0G --- [           main] n.g.c.o.OperationsApplication            : Started OperationsApplication in 23.321 seconds (JVM running for 25.465)
+2022-10-07 07:53:59.484  INFO LAPTOP-LTI5PG0G --- [ntLoopGroup-3-3] o.m.d.connection                         : Opened connection [connectionId{localValue:3, serverValue:141}] to localhost:27017
+2022-10-07 07:53:59.810  INFO LAPTOP-LTI5PG0G --- [ntLoopGroup-3-4] o.m.d.connection                         : Opened connection [connectionId{localValue:4, serverValue:142}] to localhost:27017

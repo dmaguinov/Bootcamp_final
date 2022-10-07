@@ -28,13 +28,13 @@ public class WalletMovementService implements IWalletMovementService {
                 return clientWalletRepositories.findByNumberPhone(walletMovementDto.getNumberPhone())
                 .flatMap(x -> {
                     double newAmount = 0.0;
-                    if(walletMovementDto.getMovementType().equals("E")){
+                    if(walletMovementDto.getMovementType().toString().equals("E")){
                         if(x.getAmount()<walletMovementDto.getAmount()){
                             //saldo insuficiente para pago
                             return Mono.empty();
                         }
                         newAmount = x.getAmount() - walletMovementDto.getAmount();
-                        return Mono.just(x);
+                        //return Mono.just(x);
                     }
                     else{
                         newAmount  = x.getAmount() + walletMovementDto.getAmount();
