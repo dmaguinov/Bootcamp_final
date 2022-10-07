@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.Valid;
 
 @RestController
@@ -21,18 +24,34 @@ public class ClientWalletController {
     private ITypeDocumentService typeDocumentService;
 
     @PostMapping("/")
-    public Mono<ClientWalletModel> registerClient(@RequestBody @Valid Mono<ClientWalletModel> request){
+    public Mono<Map<String, Object>> registerClient(@RequestBody @Valid Mono<ClientWalletModel> request){
+        Map<String, Object> response = new HashMap<>();
         return request
                 .flatMap(x ->
                         typeDocumentService.getOne(x.getTypeDocument())
-                                .flatMap(y -> Mono.just(x))
-                                .switchIfEmpty(Mono.empty())
+                                .map(y -> x)
+                                .defaultIfEmpty(new ClientWalletModel())
                 )
-                .flatMap(x ->
-                        clientWalletService.findByNumberDocumentAndTypeDocument(x.getNumberDocument(), x.getTypeDocument())
-                                .flatMap(y -> Mono.just(new ClientWalletModel()))
-                                .switchIfEmpty(clientWalletService.register(x))
-                )
-                .switchIfEmpty(Mono.empty());
+                .flatMap(x -> {
+                        if(x.getEmail() == null || x.getEmail().isBlank())
+                        {
+                                response.put("valid", "No se logró identificar el tipo de documento");
+                                return Mono.just(response);
+                        }
+                        return clientWalletService.findByNumberDocumentAndTypeDocument(x.getNumberDocument(), x.getTypeDocument())
+                                .flatMap(y -> {
+                                        response.put("validWallet", "El cliente Wallet ya existe");
+                                        response.put("clientWallet", y);
+                                        return Mono.just(response);
+                                })
+                                .switchIfEmpty(
+                                        clientWalletService.register(x).flatMap(
+                                                y -> {
+                                                        response.put("clientWallet", y);
+                                                        return Mono.just(response);
+                                                }
+                                        )
+                                );
+                });
     }
 }
